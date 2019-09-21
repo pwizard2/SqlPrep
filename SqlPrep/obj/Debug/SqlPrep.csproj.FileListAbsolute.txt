@@ -1,9 +1,0 @@
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\bin\Debug\SqlPrep.exe.config
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\bin\Debug\SqlPrep.exe
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\bin\Debug\SqlPrep.pdb
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.csprojResolveAssemblyReference.cache
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.MainForm.resources
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.csproj.GenerateResource.Cache
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.exe
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.pdb
-C:\Users\Will Kraft\Documents\SharpDevelop Projects\SqlPrep\SqlPrep\obj\Debug\SqlPrep.dlgVariable.resources
