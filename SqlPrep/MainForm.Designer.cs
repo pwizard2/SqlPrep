@@ -129,7 +129,7 @@ namespace SqlPrep
 			// quitToolStripMenuItem
 			// 
 			this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-			this.quitToolStripMenuItem.Size = new System.Drawing.Size(97, 22);
+			this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.quitToolStripMenuItem.Text = "Quit";
 			this.quitToolStripMenuItem.Click += new System.EventHandler(this.QuitToolStripMenuItemClick);
 			// 
@@ -158,18 +158,21 @@ namespace SqlPrep
 			this.upperToolStripMenuItem.Name = "upperToolStripMenuItem";
 			this.upperToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
 			this.upperToolStripMenuItem.Text = "Upper";
+			this.upperToolStripMenuItem.Click += new System.EventHandler(this.UpperToolStripMenuItemClick);
 			// 
 			// lowerToolStripMenuItem
 			// 
 			this.lowerToolStripMenuItem.Name = "lowerToolStripMenuItem";
 			this.lowerToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
 			this.lowerToolStripMenuItem.Text = "Lower";
+			this.lowerToolStripMenuItem.Click += new System.EventHandler(this.LowerToolStripMenuItemClick);
 			// 
 			// pasteToolStripMenuItem
 			// 
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
 			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
+			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItemClick);
 			// 
 			// toolStripSeparator1
 			// 
@@ -195,17 +198,19 @@ namespace SqlPrep
 			// prepareToolStripMenuItem
 			// 
 			this.prepareToolStripMenuItem.Name = "prepareToolStripMenuItem";
-			this.prepareToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.prepareToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
 			this.prepareToolStripMenuItem.Text = "Prepare";
-			this.prepareToolStripMenuItem.ToolTipText = "Take a Sql string and break it up for multi-line in C#.";
+			this.prepareToolStripMenuItem.ToolTipText = "Convert raw Sql or text => Multi-line C# string statement (preserves whitespace/n" +
+	"ewlines).";
 			this.prepareToolStripMenuItem.Click += new System.EventHandler(this.PrepareToolStripMenuItemClick);
 			// 
 			// stripToolStripMenuItem
 			// 
 			this.stripToolStripMenuItem.Name = "stripToolStripMenuItem";
-			this.stripToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.stripToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
 			this.stripToolStripMenuItem.Text = "Strip";
-			this.stripToolStripMenuItem.ToolTipText = "Convert a C# ";
+			this.stripToolStripMenuItem.ToolTipText = "Convert multi-line C# string statement => Raw Sql or text (preserves whitespace/n" +
+	"ewlines).\r\n";
 			this.stripToolStripMenuItem.Click += new System.EventHandler(this.StripToolStripMenuItemClick);
 			// 
 			// txtOutput

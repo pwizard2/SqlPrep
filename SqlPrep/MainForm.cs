@@ -188,7 +188,8 @@ namespace SqlPrep
 		{			
 			try {
 				
-				
+				if (string.IsNullOrEmpty(Input))
+					throw new Exception("No text to process.");
 				
 				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
 				var sb = new StringBuilder();
@@ -210,8 +211,8 @@ namespace SqlPrep
 							lead = _data.IndexOf("=", StringComparison.InvariantCulture);
 							
 				
-							if(!Regex.IsMatch(_data,@"^(var|string)\s+.+=\s\"""))
-							   throw new Exception("Invalid input string detected. This method only accepts valid C# string variable statements beginning with \"var\" or \"string\".");
+							if (!Regex.IsMatch(_data, @"^(var|string)\s+.+=\s\"""))
+								throw new Exception("Invalid input string detected. This method only accepts valid C# string variable statements beginning with \"var\" or \"string\".");
 						}
 
 						if (!string.IsNullOrEmpty(_data)) {
@@ -219,15 +220,15 @@ namespace SqlPrep
 							if (_data.Length >= lead + 4) {
 								var _cleaned = _data.Substring(lead + 4);
 								//_cleaned = _cleaned.Replace("\"", string.Empty);
-								_cleaned = _cleaned.Substring(0, _cleaned.Length-1);
+								_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
 								
 								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
 									sb.AppendLine(_cleaned);
 								
 							} else {
 								
-							if (!Regex.IsMatch(_data, @"\s+\;"))	
-								sb.AppendLine(_data);
+								if (!Regex.IsMatch(_data, @"\s+\;"))
+									sb.AppendLine(_data);
 							}
 							
 						}
@@ -258,5 +259,21 @@ namespace SqlPrep
 		{
 			Strip();
 		}
+		
+		void UpperToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			Clipboard.SetText(Input);
+		}
+		
+		void LowerToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			Clipboard.SetText(Output);
+		}
+		
+		void PasteToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			Input=Clipboard.GetText();
+		}
+		
 	}
 }
