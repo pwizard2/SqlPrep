@@ -28,6 +28,8 @@ namespace SqlPrep
 		private System.Windows.Forms.ToolStripMenuItem lowerToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -60,6 +62,8 @@ namespace SqlPrep
 			this.upperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lowerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.prepareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.stripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,8 +90,8 @@ namespace SqlPrep
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.txtOutput);
-			this.splitContainer1.Size = new System.Drawing.Size(1075, 727);
-			this.splitContainer1.SplitterDistance = 323;
+			this.splitContainer1.Size = new System.Drawing.Size(1184, 761);
+			this.splitContainer1.SplitterDistance = 360;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// txtInput
@@ -98,8 +102,9 @@ namespace SqlPrep
 			this.txtInput.Multiline = true;
 			this.txtInput.Name = "txtInput";
 			this.txtInput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.txtInput.Size = new System.Drawing.Size(1075, 299);
+			this.txtInput.Size = new System.Drawing.Size(1184, 336);
 			this.txtInput.TabIndex = 0;
+			this.txtInput.WordWrap = false;
 			// 
 			// menuStrip1
 			// 
@@ -109,7 +114,7 @@ namespace SqlPrep
 			this.convertToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(1075, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(1184, 24);
 			this.menuStrip1.TabIndex = 1;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -132,7 +137,9 @@ namespace SqlPrep
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.copyToolStripMenuItem,
-			this.pasteToolStripMenuItem});
+			this.pasteToolStripMenuItem,
+			this.toolStripSeparator1,
+			this.clearToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "Edit";
@@ -164,6 +171,18 @@ namespace SqlPrep
 			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(99, 6);
+			// 
+			// clearToolStripMenuItem
+			// 
+			this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+			this.clearToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
+			this.clearToolStripMenuItem.Text = "Clear";
+			this.clearToolStripMenuItem.Click += new System.EventHandler(this.ClearToolStripMenuItemClick);
+			// 
 			// convertToolStripMenuItem
 			// 
 			this.convertToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -176,7 +195,7 @@ namespace SqlPrep
 			// prepareToolStripMenuItem
 			// 
 			this.prepareToolStripMenuItem.Name = "prepareToolStripMenuItem";
-			this.prepareToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.prepareToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.prepareToolStripMenuItem.Text = "Prepare";
 			this.prepareToolStripMenuItem.ToolTipText = "Take a Sql string and break it up for multi-line in C#.";
 			this.prepareToolStripMenuItem.Click += new System.EventHandler(this.PrepareToolStripMenuItemClick);
@@ -184,28 +203,31 @@ namespace SqlPrep
 			// stripToolStripMenuItem
 			// 
 			this.stripToolStripMenuItem.Name = "stripToolStripMenuItem";
-			this.stripToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.stripToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.stripToolStripMenuItem.Text = "Strip";
 			this.stripToolStripMenuItem.ToolTipText = "Convert a C# ";
+			this.stripToolStripMenuItem.Click += new System.EventHandler(this.StripToolStripMenuItemClick);
 			// 
 			// txtOutput
 			// 
 			this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtOutput.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.txtOutput.ForeColor = System.Drawing.Color.DarkBlue;
 			this.txtOutput.Location = new System.Drawing.Point(0, 0);
 			this.txtOutput.Multiline = true;
 			this.txtOutput.Name = "txtOutput";
 			this.txtOutput.ReadOnly = true;
 			this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.txtOutput.Size = new System.Drawing.Size(1075, 400);
+			this.txtOutput.Size = new System.Drawing.Size(1184, 397);
 			this.txtOutput.TabIndex = 0;
+			this.txtOutput.WordWrap = false;
 			this.txtOutput.TextChanged += new System.EventHandler(this.TextBox2TextChanged);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1075, 727);
+			this.ClientSize = new System.Drawing.Size(1184, 761);
 			this.Controls.Add(this.splitContainer1);
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";

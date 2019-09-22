@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SqlPrep
 {
@@ -22,23 +23,41 @@ namespace SqlPrep
 	public partial class MainForm : Form
 	{
 		
-		string Input
-		{
-			get{
+		/// <summary>
+		/// Gets whether this program is running in devmode. --Will Kraft (9/22/19).
+		/// </summary>
+		bool DevMode {
+			get {
+				#if DEBUG
+				return true;				
+				#else
+				return false;				
+				#endif
+			}
+			
+		}
+		
+		/// <summary>
+		/// Gets or sets the text from the upper pane. --Will Kraft (9/22/19).
+		/// </summary>
+		string Input {
+			get {
 				return txtInput.Text;
 			}
-			set{
-				txtInput.Text=value;
+			set {
+				txtInput.Text = value;
 			}
 		}
 		
-		string Output
-		{
-			get{
+		/// <summary>
+		/// Gets or sets the text from the lower pane. --Will Kraft (9/22/19).
+		/// </summary>
+		string Output {
+			get {
 				return txtOutput.Text;
 			}
-			set{
-				txtOutput.Text=value;
+			set {
+				txtOutput.Text = value;
 			}
 		}
 		
@@ -79,48 +98,45 @@ namespace SqlPrep
 		/// <summary>
 		/// Add c# line Formatting.
 		/// </summary>
-		void Prepare(){
+		void Prepare()
+		{
 			
-			try{
+			try {
 				
-				var _varName=string.Empty;
+				var _varName = string.Empty;
 				
-				if(string.IsNullOrEmpty(Input))
-					throw new Exception("Nothing to convert");
+				if (string.IsNullOrEmpty(Input))
+					throw new Exception("No text to process.");
 				   
+				var sb = new StringBuilder();
 				
-				
-				var sb=new StringBuilder();
-				
-				var _varDlg=new dlgVariable();
+				var _varDlg = new dlgVariable();
 				_varDlg.ShowDialog();
 				
-				_varName=string.IsNullOrEmpty(_varDlg.VariableName) ? "_query" : _varDlg.VariableName;
+				_varName = string.IsNullOrEmpty(_varDlg.VariableName) ? "_query" : _varDlg.VariableName;
 				
-				var lineCount=Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
+				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
 	
-				using(var tr=new StringReader(Input))
-				{										
+				using (var tr = new StringReader(Input)) {										
 
-					var _data=string.Empty;
+					var _data = string.Empty;
 					
-					var _currentLineNum=0;
+					var _currentLineNum = 0;
 
 
-					do{
+					do {
 						
-						_data=tr.ReadLine();
+						_data = tr.ReadLine();
 						
-						if(!string.IsNullOrEmpty(_data)){
-							_data=_data.TrimEnd();
-						}
-						else{
+						if (!string.IsNullOrEmpty(_data)) {
+							_data = _data.TrimEnd();
+						} else {
 							continue;
 						}
 							
 						
-						if(_currentLineNum==0){
-							var _nextLine=new StringBuilder();
+						if (_currentLineNum == 0) {
+							var _nextLine = new StringBuilder();
 							
 							_nextLine.Append("var ");						
 							_nextLine.Append(_varName);						                 
@@ -129,13 +145,12 @@ namespace SqlPrep
 							_nextLine.Append("\"");
 							
 							sb.AppendLine(_nextLine.ToString());
-						}						
-						else{
+						} else {
 							
-							var _nextLine=new StringBuilder();
+							var _nextLine = new StringBuilder();
 							
-							for(int i=0; i < _varName.Length + 5; i++)
-							    _nextLine.Append(" ");
+							for (int i = 0; i < _varName.Length + 5; i++)
+								_nextLine.Append(" ");
 							    
 							_nextLine.Append("+ \" ");
 							
@@ -146,38 +161,95 @@ namespace SqlPrep
 						}
 						
 						_currentLineNum++;
-					}
-					while(_data != null);
+					} while(_data != null);
 	                   
 
-						var _lastLine=new StringBuilder();
+					var _lastLine = new StringBuilder();
 							
-							for(int i=0; i < _varName.Length + 5; i++)
-							    _lastLine.Append(" ");
+					for (int i = 0; i < _varName.Length + 5; i++)
+						_lastLine.Append(" ");
 							
-							_lastLine.Append(";");
+					_lastLine.Append(";");
 							
-							sb.Append(_lastLine.ToString());
+					sb.Append(_lastLine.ToString());
 					
-					Output=sb.ToString();
+					Output = sb.ToString();
 				}
-			}
-			catch(Exception ex){
+			} catch (Exception ex) {
 				
-				MessageBox.Show(ex.ToString());
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 		
 		/// <summary>
 		/// Remove the C# line formatting. --Will Kraft (9/21/19).
 		/// </summary>
-		void Strip(){
-			try{
+		void Strip()
+		{			
+			try {
 				
-			}
-			catch(Exception ex){
+				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
+				var sb = new StringBuilder();
 				
+				using (var tr = new StringReader(Input)) {										
+
+					var _data = string.Empty;
+					
+					var _currentLineNum = 0;
+					
+					var lead = 0;
+					
+					do {
+						
+						
+						_data = tr.ReadLine();
+						
+						if (_currentLineNum == 0) {
+							lead = _data.IndexOf("=", StringComparison.InvariantCulture);
+						}
+
+						if (!string.IsNullOrEmpty(_data)) {
+							
+							if (_data.Length >= lead + 4) {
+								var _cleaned = _data.Substring(lead + 4);
+								_cleaned = _cleaned.Replace("\"", string.Empty);
+								
+								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
+									sb.AppendLine(_cleaned);
+								
+							} else {
+								
+							if (!Regex.IsMatch(_data, @"\s+\;"))	
+								sb.AppendLine(_data);
+							}
+							
+						}
+						
+							
+						//sb.AppendLine(_cleaned);
+						_currentLineNum++;
+					} while(_data != null);
+					
+					Output = sb.ToString();
+				
+				}
+				
+			} catch (Exception ex) {
+				
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+		
+		void ClearToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			Input = string.Empty;
+			Output = string.Empty;
+			txtInput.Focus();
+		}
+		
+		void StripToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			Strip();
 		}
 	}
 }
