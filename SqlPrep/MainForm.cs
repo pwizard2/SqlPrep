@@ -188,6 +188,8 @@ namespace SqlPrep
 		{			
 			try {
 				
+				
+				
 				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
 				var sb = new StringBuilder();
 				
@@ -206,6 +208,10 @@ namespace SqlPrep
 						
 						if (_currentLineNum == 0) {
 							lead = _data.IndexOf("=", StringComparison.InvariantCulture);
+							
+				
+							if(!Regex.IsMatch(_data,@"^(var|string)\s+.+=\s\"""))
+							   throw new Exception("Invalid input string detected. This app only accepts valid C# string variable statements beginning with \"var\" or \"string\".");
 						}
 
 						if (!string.IsNullOrEmpty(_data)) {
