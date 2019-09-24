@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace SqlPrep
 {
@@ -17,7 +18,12 @@ namespace SqlPrep
 	/// </summary>
 	public partial class dlgVariable : Form
 	{
-		internal string VariableName{get;set;}
+		/// <summary>
+		/// This is the variable name. --Will Kraft (9/23/19).
+		/// </summary>
+		internal string VariableName{ get; set; }
+		
+		internal int LeftPadding { get; set; }
 		
 		public dlgVariable()
 		{
@@ -34,8 +40,12 @@ namespace SqlPrep
 		void Button1Click(object sender, EventArgs e)
 		{
 		
-			VariableName=textBox1.Text;
+			var _pad = textBox2.Text ?? string.Empty;
+			VariableName = textBox1.Text;
+			LeftPadding = string.IsNullOrEmpty(_pad) ? 0 : _pad.Length;
 			Close();
 		}
+		
+		
 	}
 }

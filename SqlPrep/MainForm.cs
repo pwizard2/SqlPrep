@@ -114,6 +114,7 @@ namespace SqlPrep
 				_varDlg.ShowDialog();
 				
 				_varName = string.IsNullOrEmpty(_varDlg.VariableName) ? "_query" : _varDlg.VariableName;
+				var _extraPad = _varDlg.LeftPadding;
 				
 				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
 	
@@ -149,7 +150,7 @@ namespace SqlPrep
 							
 							var _nextLine = new StringBuilder();
 							
-							for (int i = 0; i < _varName.Length + 5; i++)
+							for (int i = 0; i < _varName.Length + 5 + _extraPad; i++)
 								_nextLine.Append(" ");
 							    
 							_nextLine.Append("+ \" ");
@@ -166,7 +167,7 @@ namespace SqlPrep
 
 					var _lastLine = new StringBuilder();
 							
-					for (int i = 0; i < _varName.Length + 5; i++)
+					for (int i = 0; i < _varName.Length + 5 + _extraPad; i++)
 						_lastLine.Append(" ");
 							
 					_lastLine.Append(";");
@@ -217,15 +218,28 @@ namespace SqlPrep
 
 						if (!string.IsNullOrEmpty(_data)) {
 							
-							if (_data.Length >= lead + 4) {
-								var _cleaned = _data.Substring(lead + 4);
+							if (_data.Contains("+ \"")) {
+
+								var _cleaned = _data.Substring(_data.IndexOf("+" , StringComparison.InvariantCulture)+3);
 								//_cleaned = _cleaned.Replace("\"", string.Empty);
 								_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
 								
 								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
 									sb.AppendLine(_cleaned);
 								
-							} else {
+							} 
+							
+							else if (_data.Contains("= \"")) {
+
+								var _cleaned = _data.Substring(_data.IndexOf("=" , StringComparison.InvariantCulture)+3);
+								//_cleaned = _cleaned.Replace("\"", string.Empty);
+								_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
+								
+								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
+									sb.AppendLine(_cleaned);
+								
+							}
+							else {
 								
 								if (!Regex.IsMatch(_data, @"\s+\;"))
 									sb.AppendLine(_data);
@@ -262,17 +276,26 @@ namespace SqlPrep
 		
 		void UpperToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			Clipboard.SetText(Input);
+			try {
+				Clipboard.SetText(Input);
+			} catch {
+				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 		
 		void LowerToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			Clipboard.SetText(Output);
+			try {
+				Clipboard.SetText(Output);
+			} catch {
+				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			
 		}
 		
 		void PasteToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			Input=Clipboard.GetText();
+			Input = Clipboard.GetText();
 		}
 		
 	}
