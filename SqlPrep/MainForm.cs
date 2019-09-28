@@ -111,10 +111,14 @@ namespace SqlPrep
 				var sb = new StringBuilder();
 				
 				var _varDlg = new dlgVariable();
-				_varDlg.ShowDialog();
+				var _result=_varDlg.ShowDialog();
+				
+				if(_result==DialogResult.Cancel)
+					return;
 				
 				_varName = string.IsNullOrEmpty(_varDlg.VariableName) ? "_query" : _varDlg.VariableName;
 				var _extraPad = _varDlg.LeftPadding;
+				var _varType = _varDlg.UseVar ? "var" : "string";
 				
 				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
 	
@@ -139,7 +143,8 @@ namespace SqlPrep
 						if (_currentLineNum == 0) {
 							var _nextLine = new StringBuilder();
 							
-							_nextLine.Append("var ");						
+							_nextLine.Append(_varType);
+							_nextLine.Append(" ");						
 							_nextLine.Append(_varName);						                 
 							_nextLine.Append(" = \" ");
 							_nextLine.Append(_data);
@@ -150,7 +155,7 @@ namespace SqlPrep
 							
 							var _nextLine = new StringBuilder();
 							
-							for (int i = 0; i < _varName.Length + 5 + _extraPad; i++)
+							for (int i = 0; i < _varName.Length + (_varType.Length + 2) + _extraPad; i++)
 								_nextLine.Append(" ");
 							    
 							_nextLine.Append("+ \" ");
@@ -167,7 +172,7 @@ namespace SqlPrep
 
 					var _lastLine = new StringBuilder();
 							
-					for (int i = 0; i < _varName.Length + 5 + _extraPad; i++)
+					for (int i = 0; i < _varName.Length + (_varType.Length + 2) + _extraPad; i++)
 						_lastLine.Append(" ");
 							
 					_lastLine.Append(";");
@@ -204,15 +209,14 @@ namespace SqlPrep
 					var lead = 0;
 					
 					do {
-						
-						
+
 						_data = tr.ReadLine();
 						
 						if (_currentLineNum == 0) {
 							lead = _data.IndexOf("=", StringComparison.InvariantCulture);
 							
 				
-							if (!Regex.IsMatch(_data, @"^(var|string)\s+.+=\s\"""))
+							if (!Regex.IsMatch(_data.TrimStart(), @"^(var|string)\s+.+=\s\"""))
 								throw new Exception("Invalid input string detected. This method only accepts valid C# string variable statements beginning with \"var\" or \"string\".");
 						}
 
@@ -220,36 +224,31 @@ namespace SqlPrep
 							
 							if (_data.Contains("+ \"")) {
 
-								var _cleaned = _data.Substring(_data.IndexOf("+" , StringComparison.InvariantCulture)+3);
-								//_cleaned = _cleaned.Replace("\"", string.Empty);
-								_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
+								var _cleaned = _data.Substring(_data.IndexOf("+", StringComparison.InvariantCulture) + 3);
+								//_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
 								
-								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
-									sb.AppendLine(_cleaned);
+								_cleaned = _cleaned.Contains("\";") ? _cleaned.Substring(0, _cleaned.Length - 2) 
+									: _cleaned.Substring(0, _cleaned.Length - 1);
 								
-							} 
-							
-							else if (_data.Contains("= \"")) {
+								if (!Regex.IsMatch(_cleaned, @"\s+\;") && !string.IsNullOrEmpty(_cleaned))
+									sb.AppendLine(_cleaned);	
+							} else if (_data.Contains("= \"")) {
 
-								var _cleaned = _data.Substring(_data.IndexOf("=" , StringComparison.InvariantCulture)+3);
-								//_cleaned = _cleaned.Replace("\"", string.Empty);
-								_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
-								
+								var _cleaned = _data.Substring(_data.IndexOf("=", StringComparison.InvariantCulture) + 3);
+
+								   	_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
+
 								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
-									sb.AppendLine(_cleaned);
-								
-							}
-							else {
+									sb.AppendLine(_cleaned);								
+							} else {
 								
 								if (!Regex.IsMatch(_data, @"\s+\;"))
 									sb.AppendLine(_data);
-							}
-							
+							}							
 						}
-						
-							
-						//sb.AppendLine(_cleaned);
+	
 						_currentLineNum++;
+						
 					} while(_data != null);
 					
 					Output = sb.ToString();
