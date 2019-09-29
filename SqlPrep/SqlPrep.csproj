@@ -70,6 +70,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.cs" />
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
     <Compile Include="PrepareDialog.cs" />
     <Compile Include="PrepareDialog.Designer.cs">
       <DependentUpon>PrepareDialog.cs</DependentUpon>
@@ -85,6 +89,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PrepareDialog.resx">
       <DependentUpon>PrepareDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -30,6 +30,7 @@ namespace SqlPrep
 		private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -68,6 +69,7 @@ namespace SqlPrep
 			this.prepareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.stripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.txtOutput = new System.Windows.Forms.TextBox();
+			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -111,7 +113,8 @@ namespace SqlPrep
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.fileToolStripMenuItem,
 			this.editToolStripMenuItem,
-			this.convertToolStripMenuItem});
+			this.convertToolStripMenuItem,
+			this.aboutToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(1184, 24);
@@ -227,6 +230,13 @@ namespace SqlPrep
 			this.txtOutput.TabIndex = 0;
 			this.txtOutput.WordWrap = false;
 			this.txtOutput.TextChanged += new System.EventHandler(this.TextBox2TextChanged);
+			// 
+			// aboutToolStripMenuItem
+			// 
+			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+			this.aboutToolStripMenuItem.Text = "About";
+			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItemClick);
 			// 
 			// MainForm
 			// 
