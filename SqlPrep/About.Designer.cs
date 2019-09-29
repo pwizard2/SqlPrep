@@ -155,6 +155,8 @@ namespace SqlPrep
 			this.MinimizeBox = false;
 			this.Name = "About";
 			this.ShowIcon = false;
+			this.ShowInTaskbar = false;
+			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "About SqlPrep";
 			this.panel1.ResumeLayout(false);
