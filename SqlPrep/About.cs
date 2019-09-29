@@ -34,7 +34,8 @@ namespace SqlPrep
 			InitializeComponent();
 			
 			var _assembly=Assembly.GetExecutingAssembly();
-			lblVer.Text=FileVersionInfo.GetVersionInfo(_assembly.Location).FileVersion;
+
+			label1.Text="SqlPrep v." + FileVersionInfo.GetVersionInfo(_assembly.Location).FileVersion;
 			button1.Focus();
 		}
 		
