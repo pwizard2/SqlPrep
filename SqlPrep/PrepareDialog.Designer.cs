@@ -142,7 +142,7 @@ namespace SqlPrep
 			this.label2.Size = new System.Drawing.Size(356, 41);
 			this.label2.TabIndex = 3;
 			this.label2.Text = "(Optional) Copy && paste leading whitespace between the current indent/cursor pos" +
-	"ition and the left margin.  This ensures the rows align correctly.";
+	"ition and the left margin in  your IDE.  This ensures the rows align correctly.";
 			this.label2.Click += new System.EventHandler(this.Label2Click);
 			// 
 			// textBox2

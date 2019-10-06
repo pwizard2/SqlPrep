@@ -17,18 +17,30 @@
  
 using System;
 using System.Windows.Forms;
-using System.Text;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace SqlPrep
 {
 	/// <summary>
-	/// Description of MainForm.
+	/// Main GUI.
 	/// </summary>
 	public partial class MainForm : Form
 	{
+		/// <summary>
+		/// Gets or sets the number of pages in the history.
+		/// </summary>
+		int PageNumber{ get; set; }
+		
+		/// <summary>
+		/// Gets or sets the converter object on the active tab. --Will Kraft (10/6/19).
+		/// </summary>
+		Converter Current{ get; set; }
+		
+		/// <summary>
+		/// Gets or sets the tab name history for this session. --Will Kraft (10/6/19).
+		/// </summary>
+		List<string> History{ get; set; }
 		
 		/// <summary>
 		/// Gets whether this program is running in devmode. --Will Kraft (9/22/19).
@@ -45,29 +57,24 @@ namespace SqlPrep
 		}
 		
 		/// <summary>
-		/// Gets or sets the text from the upper pane. --Will Kraft (9/22/19).
+		/// Spawn a tab with a converter object. --Will Kraft (10/6/19).
 		/// </summary>
-		string Input {
-			get {
-				return txtInput.Text;
-			}
-			set {
-				txtInput.Text = value;
-			}
+		void AddTab()
+		{
+			
+			var _con = new Converter();
+			_con.Dock = DockStyle.Fill;
+			_con.Name = "_con";
+			_con.PrepareDone += _con_PrepareDone;
+			_con.StripDone += _con_StripDone;	
+			
+			var _newPage = new TabPage();
+			_newPage.Text = "Query " + (PageNumber + 1);
+			_newPage.Controls.Add(_con);
+
+			tabControl1.TabPages.Add(_newPage);
+			PageNumber++;
 		}
-		
-		/// <summary>
-		/// Gets or sets the text from the lower pane. --Will Kraft (9/22/19).
-		/// </summary>
-		string Output {
-			get {
-				return txtOutput.Text;
-			}
-			set {
-				txtOutput.Text = value;
-			}
-		}
-		
 		
 		public MainForm()
 		{
@@ -79,236 +86,156 @@ namespace SqlPrep
 			//
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
+			
+			AddTab();
+			Current = (Converter)tabControl1.TabPages[0].Controls["_con"];
+			History = new List<string>();
+				
 		}
+		
 		void MainFormLoad(object sender, EventArgs e)
 		{
 	
 		}
+		
 		void TextBox2TextChanged(object sender, EventArgs e)
 		{
 	
 		}
-		void StripParenthesisToolStripMenuItemClick(object sender, EventArgs e)
-		{
-	
-		}
+		
+
 		void QuitToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			Environment.Exit(0);
 		}
 		
-		void PrepareToolStripMenuItemClick(object sender, EventArgs e)
-		{
-			Prepare();
-		}
-		
-		/// <summary>
-		/// Add c# line Formatting.
-		/// </summary>
-		void Prepare()
-		{
-			
-			try {
-				
-				var _varName = string.Empty;
-				
-				if (string.IsNullOrEmpty(Input))
-					throw new Exception("No text to process.");
-				   
-				var sb = new StringBuilder();
-				
-				var _varDlg = new dlgVariable();
-				var _result=_varDlg.ShowDialog();
-				
-				if(_result==DialogResult.Cancel)
-					return;
-				
-				_varName = string.IsNullOrEmpty(_varDlg.VariableName) ? "_query" : _varDlg.VariableName;
-				var _extraPad = _varDlg.LeftPadding;
-				var _varType = _varDlg.UseVar ? "var" : "string";
-				
-				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
-	
-				using (var tr = new StringReader(Input)) {										
-
-					var _data = string.Empty;
-					
-					var _currentLineNum = 0;
-
-
-					do {
-						
-						_data = tr.ReadLine();
-						
-						if (!string.IsNullOrEmpty(_data)) {
-							_data = _data.TrimEnd();
-						} else {
-							continue;
-						}
-							
-						
-						if (_currentLineNum == 0) {
-							var _nextLine = new StringBuilder();
-							
-							_nextLine.Append(_varType);
-							_nextLine.Append(" ");						
-							_nextLine.Append(_varName);						                 
-							_nextLine.Append(" = \" ");
-							_nextLine.Append(_data);
-							_nextLine.Append("\"");
-							
-							sb.AppendLine(_nextLine.ToString());
-						} else {
-							
-							var _nextLine = new StringBuilder();
-							
-							for (int i = 0; i < _varName.Length + (_varType.Length + 2) + _extraPad; i++)
-								_nextLine.Append(" ");
-							    
-							_nextLine.Append("+ \" ");
-							
-							_nextLine.Append(_data);
-							_nextLine.Append("\"");
-							
-							sb.AppendLine(_nextLine.ToString());
-						}
-						
-						_currentLineNum++;
-					} while(_data != null);
-	                   
-
-					var _lastLine = new StringBuilder();
-							
-					for (int i = 0; i < _varName.Length + (_varType.Length + 2) + _extraPad; i++)
-						_lastLine.Append(" ");
-							
-					_lastLine.Append(";");
-							
-					sb.Append(_lastLine.ToString());
-					
-					Output = sb.ToString();
-				}
-			} catch (Exception ex) {
-				
-				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-		
-		/// <summary>
-		/// Remove the C# line formatting. --Will Kraft (9/21/19).
-		/// </summary>
-		void Strip()
-		{			
-			try {
-				
-				if (string.IsNullOrEmpty(Input))
-					throw new Exception("No text to process.");
-				
-				var lineCount = Input.Length - Input.Replace(Environment.NewLine, string.Empty).Length;
-				var sb = new StringBuilder();
-				
-				using (var tr = new StringReader(Input)) {										
-
-					var _data = string.Empty;
-					
-					var _currentLineNum = 0;
-					
-					var lead = 0;
-					
-					do {
-
-						_data = tr.ReadLine();
-						
-						if (_currentLineNum == 0) {
-							lead = _data.IndexOf("=", StringComparison.InvariantCulture);
-							
-				
-							if (!Regex.IsMatch(_data.TrimStart(), @"^(var|string)\s+.+=\s\"""))
-								throw new Exception("Invalid input string detected. This method only accepts valid C# string variable statements beginning with \"var\" or \"string\".");
-						}
-
-						if (!string.IsNullOrEmpty(_data)) {
-							
-							if (_data.Contains("+ \"")) {
-
-								var _cleaned = _data.Substring(_data.IndexOf("+", StringComparison.InvariantCulture) + 3);
-								//_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
-								
-								_cleaned = _cleaned.Contains("\";") ? _cleaned.Substring(0, _cleaned.Length - 2) 
-									: _cleaned.Substring(0, _cleaned.Length - 1);
-								
-								if (!Regex.IsMatch(_cleaned, @"\s+\;") && !string.IsNullOrEmpty(_cleaned))
-									sb.AppendLine(_cleaned);	
-							} else if (_data.Contains("= \"")) {
-
-								var _cleaned = _data.Substring(_data.IndexOf("=", StringComparison.InvariantCulture) + 3);
-
-								   	_cleaned = _cleaned.Substring(0, _cleaned.Length - 1);
-
-								if (!Regex.IsMatch(_cleaned, @"\s+\;"))
-									sb.AppendLine(_cleaned);								
-							} else {
-								
-								if (!Regex.IsMatch(_data, @"\s+\;"))
-									sb.AppendLine(_data);
-							}							
-						}
-	
-						_currentLineNum++;
-						
-					} while(_data != null);
-					
-					Output = sb.ToString();
-				
-				}
-				
-			} catch (Exception ex) {
-				
-				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-		
 		void ClearToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			Input = string.Empty;
-			Output = string.Empty;
-			txtInput.Focus();
+			try {
+				Current.Input = string.Empty;
+				Current.Output = string.Empty;
+
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			
+			
 		}
 		
 		void StripToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			Strip();
+			try {
+				Current.Strip();
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 		
-		void UpperToolStripMenuItemClick(object sender, EventArgs e)
+
+		void AddToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			try {
-				Clipboard.SetText(Input);
-			} catch {
-				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AddTab();
+				tabControl1.SelectedIndex = tabControl1.TabPages.Count - 1;
+				
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		
+		void TabControl1SelectedIndexChanged(object sender, EventArgs e)
+		{
+			try {
+				Current = (Converter)tabControl1.SelectedTab.Controls["_con"];
+				
+				
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		
+		
+		void PrepareToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			try {
+				Current.Prepare();
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		
+		void PasteToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			try {
+				Current.Input = Clipboard.GetText();
+			} catch (Exception ex) {
+				MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 		
 		void LowerToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			try {
-				Clipboard.SetText(Output);
+				Clipboard.SetText(Current.Output);
 			} catch {
 				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			
 		}
 		
-		void PasteToolStripMenuItemClick(object sender, EventArgs e)
-		{
-			Input = Clipboard.GetText();
-		}
-		
 		void AboutToolStripMenuItemClick(object sender, EventArgs e)
 		{
-			var _about=new About();
+			var _about = new About();
 			_about.ShowDialog();
 		}
 		
+		void UpperToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			try {
+				Clipboard.SetText(Current.Input);
+			} catch {
+				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			
+		}
+		
+		void _con_PrepareDone(object sender, ConverterEventArgs e)
+		{
+			History.Add(e.TabName);
+			int _count = History.Count(s => s == e.TabName);
+			tabControl1.SelectedTab.Text = _count > 1 ? e.TabName + " (" + _count + ")" : e.TabName;
+			
+		}
+
+		void _con_StripDone(object sender, ConverterEventArgs e)
+		{
+			History.Add(e.TabName);
+			int _count = History.Count(s => s == e.TabName);
+			tabControl1.SelectedTab.Text = _count > 1 ? e.TabName + " (" + _count + ")" : e.TabName;
+			
+		}
+		
+		void CloseCurrentToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			try {
+				
+				if (tabControl1.TabPages.Count == 1) {
+				
+					PageNumber = 0;
+					History.Clear();
+					AddTab();
+				}
+		
+				tabControl1.TabPages.Remove(tabControl1.SelectedTab);
+				tabControl1.SelectedIndex = tabControl1.TabPages.Count - 1;
+				
+			} catch {
+				MessageBox.Show("No text to copy!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		
+		void CloseAllToolStripMenuItemClick(object sender, EventArgs e)
+		{
+		}
 	}
 }
