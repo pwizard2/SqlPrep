@@ -1,0 +1,56 @@
+﻿<Window x:Class="SqlPrep.Prepare"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SqlPrep"
+        mc:Ignorable="d"
+        Title="Prepare Query" Height="486.46" Width="341.563" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" SizeToContent="Height">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    </Window.Background>
+    <Grid Margin="0,0,0,17">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="110*"/>
+            <ColumnDefinition Width="57*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="10,10,10,-12" Grid.ColumnSpan="2" MinHeight="20">
+            <Label x:Name="label" Content="Set Variable Name:"/>
+            <TextBox x:Name="txtVariable" TextWrapping="Wrap" Text="_query"/>
+
+            <Label x:Name="label1" Content="Output Variable Type" Margin="0,10,0,0"/>
+            <Canvas Margin="0,0,0,10" MinHeight="20">
+                <RadioButton x:Name="rString" Content="String" Canvas.Left="1" IsChecked="True" GroupName="VarType" Click="SetAppendVis" RenderTransformOrigin="0.5,0.5">
+                    <RadioButton.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform X="12"/>
+                        </TransformGroup>
+                    </RadioButton.RenderTransform>
+                </RadioButton>
+                <RadioButton x:Name="rStringBuilder" Content="StringBuilder" Canvas.Left="73" GroupName="VarType" Click="SetAppendVis"/>
+            </Canvas>
+            <CheckBox x:Name="chkAppendLine" Content="Append Lines to StringBuilder" Height="16" Margin="0,0,0,3" Visibility="Collapsed"/>
+            <CheckBox x:Name="chkImplicit" Content="Use implicit (var) typing for this variable" IsChecked="True"/>
+            <Image x:Name="padExplainImg" Height="69" Source="Resources/padding.png" Stretch="Fill" Margin="0,16,0,0" >
+
+
+            </Image>
+            <TextBlock x:Name="padExplain" TextWrapping="Wrap" Text="(Optional) Copy and paste the leading whitespace between the current indent position in your code and the left margin in your IDE (as shown in the yellow area in the picture above). This ensures all the subsequent rows align properly relative to the first row in the query, assuming there are no subsequent lines containing spaces or tab stops in your code that can interfere with indentation." Margin="0,3,0,0"/>
+            <TextBox x:Name="txtPadding" TextWrapping="Wrap" Text="" Margin="0,10,0,0"/>
+            <Canvas VerticalAlignment="Top" MinHeight="24" Margin="0,24,0,0">
+                <Button x:Name="btnOK" Content="OK" Width="63" Click="BtnOK_Click" IsDefault="True"/>
+                <Button x:Name="btnCancel" Content="Cancel" Width="63" Canvas.Left="67" Click="BtnCancel_Click"/>
+            </Canvas>
+
+
+
+
+
+
+        </StackPanel>
+
+    </Grid>
+</Window>

@@ -1,0 +1,63 @@
+﻿<Window x:Class="SqlPrep.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SqlPrep"
+        mc:Ignorable="d"
+        Title="Sql Prep Tool" Height="768" Width="1024" WindowStartupLocation="Manual">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    </Window.Background>
+    <Grid  Margin="0" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu  Margin="0" VerticalAlignment="Top" Height="20" >
+            <MenuItem Header="_File">
+                <MenuItem Header="_About" Click="About_Click"/>
+
+                <MenuItem Header="_Exit" Click="MenuItem_Click" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Copy" >
+                    <MenuItem Header="Upper" Click="CopyUpperClick" InputGestureText="Ctrl+U">
+                        <MenuItem.InputBindings>
+                            <KeyBinding Gesture="Ctrl+U"/>
+                        </MenuItem.InputBindings>
+                    </MenuItem>
+                    <MenuItem Header="Lower" Click="CopyLowerClick" InputGestureText="Ctrl+L">
+                        
+                        <MenuItem.InputBindings>
+                            <KeyBinding Key="L" Modifiers="Ctrl"/>
+                        </MenuItem.InputBindings>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Paste" Click="PasteClick">
+                    <MenuItem.InputBindings>
+                        <KeyBinding Key="V" Modifiers="control"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+                <MenuItem Header="Clear" Click="ClearClick"/>
+            </MenuItem>
+            <MenuItem Header="_Tab">
+                <MenuItem Header="_New" Click="NewTabClick" InputGestureText="Ctrl+N"></MenuItem>
+                <MenuItem Header="_Close Current" Click="CloseCurrentTabClick" InputGestureText="Ctrl+D">
+
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="T_ask">
+                <MenuItem Header="_Prepare" Click="PrepareClick" InputGestureText="F2"></MenuItem>
+                <MenuItem Header="_Strip" Click="StripClick" InputGestureText="F3"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <TabControl  Margin="0,4,0,0" Grid.Row="1" BorderBrush="#FFACACAC" Name="Tabs">
+            <TabControl.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+            </TabControl.Background>
+
+        </TabControl>
+    </Grid>
+
+</Window>
