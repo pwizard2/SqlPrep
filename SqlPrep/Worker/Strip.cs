@@ -147,7 +147,7 @@ namespace SqlPrep.Worker
                         if (!Regex.IsMatch(_data, sbLinePattern))
                             continue;
 
-                        // remove the variabvle name from the line to simplify regex.
+                        // remove the variable name from the line to simplify regex.
                         var _data2 = _data.Replace(varName, string.Empty);
 
                         var nextlineFinder = Regex.Match(_data, sbLinePattern, RegexOptions.IgnoreCase);
