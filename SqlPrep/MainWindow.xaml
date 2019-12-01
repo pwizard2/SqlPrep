@@ -16,40 +16,40 @@
         </Grid.RowDefinitions>
         <Menu  Margin="0" VerticalAlignment="Top" Height="20" >
             <MenuItem Header="_File">
-                <MenuItem Header="_About" Click="About_Click"/>
+                <MenuItem x:Name="MnuAbout" Header="_About" Click="About_Click"/>
 
-                <MenuItem Header="_Exit" Click="MenuItem_Click" />
+                <MenuItem x:Name="MnuExit" Header="_Exit" Click="MenuItem_Click" />
             </MenuItem>
             <MenuItem Header="_Edit">
                 <MenuItem Header="Copy" >
-                    <MenuItem Header="Upper" Click="CopyUpperClick" InputGestureText="Ctrl+U">
+                    <MenuItem x:Name="MnuCopyUpper" Header="Upper" Click="CopyUpperClick" InputGestureText="Ctrl+U">
                         <MenuItem.InputBindings>
                             <KeyBinding Gesture="Ctrl+U"/>
                         </MenuItem.InputBindings>
                     </MenuItem>
-                    <MenuItem Header="Lower" Click="CopyLowerClick" InputGestureText="Ctrl+L">
+                    <MenuItem x:Name="MnuCopyLower" Header="Lower" Click="CopyLowerClick" InputGestureText="Ctrl+L">
                         
                         <MenuItem.InputBindings>
                             <KeyBinding Key="L" Modifiers="Ctrl"/>
                         </MenuItem.InputBindings>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Paste" Click="PasteClick">
+                <MenuItem x:Name="MnuPaste" Header="Paste" Click="PasteClick">
                     <MenuItem.InputBindings>
                         <KeyBinding Key="V" Modifiers="control"/>
                     </MenuItem.InputBindings>
                 </MenuItem>
-                <MenuItem Header="Clear" Click="ClearClick"/>
+                <MenuItem x:Name="MnuClear" Header="Clear" Click="ClearClick" Visibility="Collapsed"/>
             </MenuItem>
             <MenuItem Header="_Tab">
-                <MenuItem Header="_New" Click="NewTabClick" InputGestureText="Ctrl+N"></MenuItem>
-                <MenuItem Header="_Close Current" Click="CloseCurrentTabClick" InputGestureText="Ctrl+D">
+                <MenuItem x:Name="MnuNewTab" Header="_New" Click="NewTabClick" InputGestureText="Ctrl+N" ></MenuItem>
+                <MenuItem x:Name="MnuCloseCurrent" Header="_Close Current" Click="CloseCurrentTabClick" InputGestureText="Ctrl+D" >
 
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="T_ask">
-                <MenuItem Header="_Prepare" Click="PrepareClick" InputGestureText="F2"></MenuItem>
-                <MenuItem Header="_Strip" Click="StripClick" InputGestureText="F3"></MenuItem>
+                <MenuItem x:Name="MnuPrepare" Header="_Prepare" Click="PrepareClick" InputGestureText="F2"></MenuItem>
+                <MenuItem x:Name="MnuStrip" Header="_Strip" Click="StripClick" InputGestureText="F3"></MenuItem>
             </MenuItem>
         </Menu>
         <TabControl  Margin="0,4,0,0" Grid.Row="1" BorderBrush="#FFACACAC" Name="Tabs">
