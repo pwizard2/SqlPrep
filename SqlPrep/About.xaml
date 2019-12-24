@@ -15,7 +15,7 @@
             <Label x:Name="lblAppVer" Content="SqlPrep" FontSize="22">
 
             </Label>
-            <Label x:Name="label" Content="Copyright © 2019 by Will Kraft &lt;pwizard@gmail.com&gt;" Margin="0,0,0,10"/>
+            <Label x:Name="label" Content="Copyright © 2020 by Will Kraft &lt;pwizard@gmail.com&gt;" Margin="0,0,0,10"/>
             <RichTextBox x:Name="richTextBox" Height="212" IsReadOnly="True">
                 <RichTextBox.Background>
                     <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>

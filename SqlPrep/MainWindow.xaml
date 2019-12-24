@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SqlPrep"
         mc:Ignorable="d"
-        Title="Sql Prep Tool" Height="768" Width="1024" WindowStartupLocation="Manual">
+        Title="Sql Prep Tool" Height="768" Width="1024" WindowStartupLocation="Manual" Closing="Window_Closing">
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
     </Window.Background>
@@ -18,7 +18,7 @@
             <MenuItem Header="_File">
                 <MenuItem x:Name="MnuAbout" Header="_About" Click="About_Click"/>
 
-                <MenuItem x:Name="MnuExit" Header="_Exit" Click="MenuItem_Click" />
+                <MenuItem x:Name="MnuExit" Header="_Exit" Click="Exit_Click" />
             </MenuItem>
             <MenuItem Header="_Edit">
                 <MenuItem Header="Copy" >

@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SqlPrep")]
-[assembly: AssemblyCopyright("Copyright ©  2019 Will Kraft")]
+[assembly: AssemblyCopyright("Copyright ©  2020 Will Kraft")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,6 +51,6 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4.0.2")]
-[assembly: AssemblyFileVersion("1.4.0.2")]
+[assembly: AssemblyVersion("1.4.0.3")]
+[assembly: AssemblyFileVersion("1.4.0.3")]
 [assembly: NeutralResourcesLanguage("en-US")]

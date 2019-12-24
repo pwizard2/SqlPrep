@@ -47,6 +47,8 @@ namespace SqlPrep
 
         int TabNumber { get; set; }
 
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -88,10 +90,7 @@ namespace SqlPrep
         }
 
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
 
         void AddTab()
         {
@@ -101,7 +100,8 @@ namespace SqlPrep
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Name = $"Editor",
-                ID = Guid.NewGuid()
+                ID = Guid.NewGuid(),
+                Processed = false
             };
 
             var t = new TabItem
@@ -121,9 +121,9 @@ namespace SqlPrep
             TabNumber++;
         }
 
-        void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        void Exit_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
 
         void NewTabClick(object sender, RoutedEventArgs e)
@@ -201,6 +201,7 @@ namespace SqlPrep
 
             CurrentEditor.LowerColor = e.OutputBG;
             CurrentEditor.LowerSelect = e.OutputSelection;
+            CurrentEditor.Processed = true;
         }
 
         void StripClick(object sender, RoutedEventArgs e)
@@ -294,7 +295,40 @@ namespace SqlPrep
 
             _a.ShowDialog();
 
-            
+
+        }
+
+        /// <summary>
+        /// Gets the number of tabs that have been processed. --Will Kraft (12/24/2019).
+        /// </summary>
+        int ProcessedTabs
+        {
+            get
+            {
+                try
+                {
+                    int value = 0;
+
+                    foreach (TabItem i in Tabs.Items)
+                    {
+                        if (((EditorDuo)i.Content).Processed)
+                            value++;
+                    }
+
+                    return value;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (ProcessedTabs > 0)
+                e.Cancel = MessageBox.Show("Do you really want to exit? All processed queries will be discarded when the program closes.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning,MessageBoxResult.No) == MessageBoxResult.No;
         }
     }
 }

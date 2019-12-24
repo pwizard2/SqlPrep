@@ -29,6 +29,8 @@ namespace SqlPrep.Worker
     {
         readonly string sbPattern = @"^\s*(var|stringbuilder)\s+\w+\s*\=\s*new\s+StringBuilder\(\)\;\s*";
 
+        readonly string sPattern = "^\\s* (?:var|string)\\s+(?:\\w+)\\s+=\\s+\"(.+)\"\\s*";
+
         /// <summary>
         /// Task that strips string formatting from a snippet and returns pure SQL. --Will Kraft (10/27/19).
         /// </summary>
@@ -71,13 +73,24 @@ namespace SqlPrep.Worker
                         {
                             if (_data.Contains("+ \""))
                             {
-                                var _cleaned = _data.Substring(_data.IndexOf("+", StringComparison.InvariantCulture) + 3);
+                                // Add regex-based check to better handle queries that use "+" arithmetic. --Will Kraft (12/24/2019).
+                                if (Regex.IsMatch(_data, sPattern))
+                                {
+                                    var firstLineFinder = Regex.Match(_data, sPattern, RegexOptions.IgnoreCase);
 
-                                _cleaned = _cleaned.Contains("\";") ? _cleaned.Substring(0, _cleaned.Length - 2)
-                                    : _cleaned.Substring(0, _cleaned.Length - 1);
+                                    if (!string.IsNullOrEmpty(firstLineFinder.Groups[1].Value))
+                                        sb.AppendLine(firstLineFinder.Groups[1].Value);
+                                }
+                                else
+                                {
+                                    var _cleaned = _data.Substring(_data.IndexOf("+", StringComparison.InvariantCulture) + 3);
 
-                                if (!Regex.IsMatch(_cleaned, @"\s+\;") && !string.IsNullOrEmpty(_cleaned))
-                                    sb.AppendLine(_cleaned);
+                                    _cleaned = _cleaned.Contains("\";") ? _cleaned.Substring(0, _cleaned.Length - 2)
+                                        : _cleaned.Substring(0, _cleaned.Length - 1);
+
+                                    if (!Regex.IsMatch(_cleaned, @"\s+\;") && !string.IsNullOrEmpty(_cleaned))
+                                        sb.AppendLine(_cleaned);
+                                }
                             }
                             else if (_data.Contains("= \""))
                             {
@@ -199,7 +212,7 @@ namespace SqlPrep.Worker
                 {
                     TabName = TabLabel,
                     Successful = string.IsNullOrEmpty(error),
-                    TabTextColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fa781b")),
+                    TabTextColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fe5000")), // old color: #fa781b
                     OutputBG = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fff3cf")),
                     OutputSelection = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9c4c24"))
                 });

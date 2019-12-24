@@ -82,6 +82,10 @@ namespace SqlPrep
 
         event EventHandler TabOpened;
 
+        /// <summary>
+        /// Gets or sets whether this tab has had a task run on it yet. --Will Kraft (12/24/2019).
+        /// </summary>
+        public bool Processed { get; set; }
 
         public EditorDuo()
         {
