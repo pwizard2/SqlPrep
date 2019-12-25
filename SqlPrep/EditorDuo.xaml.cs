@@ -109,6 +109,16 @@ namespace SqlPrep
         /// </summary>
         internal PrepareEventArgs Args { get; set; }
 
+        /// <summary>
+        /// Gets or sets the type of task this tab has completed. --Will Kraft (12/24/2019).
+        /// </summary>
+        public TaskType Task { get; set; }
+
+        /// <summary>
+        /// Store the tab name for the XML file. --Will Kraft (12/24/2019).
+        /// </summary>
+        public string TabName { get; set; }
+
         private void txtUpper_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //e.Handled = true;

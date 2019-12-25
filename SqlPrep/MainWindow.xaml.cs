@@ -53,7 +53,7 @@ namespace SqlPrep
         {
             InitializeComponent();
 
-
+          
 
             AddTab();
 
@@ -101,7 +101,8 @@ namespace SqlPrep
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Name = $"Editor",
                 ID = Guid.NewGuid(),
-                Processed = false
+                Processed = false,
+                Task=TaskType.Default
             };
 
             var t = new TabItem
@@ -202,6 +203,8 @@ namespace SqlPrep
             CurrentEditor.LowerColor = e.OutputBG;
             CurrentEditor.LowerSelect = e.OutputSelection;
             CurrentEditor.Processed = true;
+            CurrentEditor.Task = e.Task;
+            CurrentEditor.TabName = e.TabName;
         }
 
         void StripClick(object sender, RoutedEventArgs e)
@@ -329,6 +332,14 @@ namespace SqlPrep
         {
             if (ProcessedTabs > 0)
                 e.Cancel = MessageBox.Show("Do you really want to exit? All processed queries will be discarded when the program closes.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning,MessageBoxResult.No) == MessageBoxResult.No;
+
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            var _h = new XmlDocumentHistory();
+            _h.SaveTabstoXml(Tabs.Items);
         }
     }
 }

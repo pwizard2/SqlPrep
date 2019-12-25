@@ -38,4 +38,26 @@ namespace SqlPrep
         /// </summary>
         StringBuilder = 1
     }
+
+    /// <summary>
+    /// Lists the types of tasks this can be. --Will Kraft (12/24/2019).
+    /// </summary>
+    public enum TaskType
+    {
+        /// <summary>
+        /// Default tab state, before any task has been executed. --Will Kraft (12/24/2019).
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// Indicates this was a Prepare-related task. --Will Kraft (12/24/2019).
+        /// </summary>
+        Prepare = 1,
+
+        /// <summary>
+        /// Indicates this was a Strip-related task. --Will Kraft (12/24/2019).
+        /// </summary>
+        Strip = 2
+
+    }
 }

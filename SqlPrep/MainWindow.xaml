@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SqlPrep"
         mc:Ignorable="d"
-        Title="Sql Prep Tool" Height="768" Width="1024" WindowStartupLocation="Manual" Closing="Window_Closing">
+        Title="Sql Prep Tool" Height="768" Width="1024" WindowStartupLocation="Manual" Closing="Window_Closing" Closed="Window_Closed">
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
     </Window.Background>

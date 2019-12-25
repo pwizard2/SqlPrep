@@ -86,6 +86,7 @@
     <Compile Include="Worker\Prepare.cs" />
     <Compile Include="Worker\Strip.cs" />
     <Compile Include="Worker\Task.cs" />
+    <Compile Include="XmlDocumentHistory.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

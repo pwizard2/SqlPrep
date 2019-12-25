@@ -54,6 +54,11 @@ namespace SqlPrep.Delegates
         /// Gets or sets the selection background color for the ouput panel. --Will Kraft (11/17/19).
         /// </summary>
         public Brush OutputSelection { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of task this tab has completed. --Will Kraft (12/24/2019).
+        /// </summary>
+        public TaskType Task { get; set; }
     }
 	
 	/// <summary>

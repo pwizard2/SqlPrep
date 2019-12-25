@@ -214,7 +214,8 @@ namespace SqlPrep.Worker
                     Successful = string.IsNullOrEmpty(error),
                     TabTextColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fe5000")), // old color: #fa781b
                     OutputBG = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fff3cf")),
-                    OutputSelection = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9c4c24"))
+                    OutputSelection = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9c4c24")),
+                    Task=TaskType.Strip
                 });
             }
         }
