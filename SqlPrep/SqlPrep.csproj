@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Delegates\ConverterEventArgs.cs" />
     <Compile Include="Delegates\PrepareEventArgs.cs" />
+    <Compile Include="Delegates\TabRestorationEventArgs.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Prepare.xaml.cs">
       <DependentUpon>Prepare.xaml</DependentUpon>

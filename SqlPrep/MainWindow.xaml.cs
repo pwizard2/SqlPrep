@@ -16,19 +16,28 @@
     along with SqlPrep.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using SqlPrep.Delegates;
 using SqlPrep.Worker;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SqlPrep
 {
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Gets or sets whether the history should be deleted when the program exits. --Will Kraft (12/29/2019).
+        /// </summary>
+        bool DeleteHistory { get; set; }
+
         bool DevMode
         {
             get
@@ -52,13 +61,6 @@ namespace SqlPrep
         public MainWindow()
         {
             InitializeComponent();
-
-          
-
-            AddTab();
-
-            CurrentEditor.InputFocus();
-
 
             var _newTabCmd = new RoutedCommand();
             _newTabCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
@@ -87,10 +89,90 @@ namespace SqlPrep
             var _pasteTcmd = new RoutedCommand();
             _pasteTcmd.InputGestures.Add(new KeyGesture(Key.V, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(_pasteTcmd, PasteClick));
+
+            var _xml = new XmlDocumentHistory();
+            _xml.RegenerateTab += _xml_RegenerateTab;
+
+            if (_xml.HistoryTabCount > 0)
+            {
+                _xml.RecoverTabs();
+            }
+            else
+            {
+                AddTab();
+                CurrentEditor.InputFocus();
+            }
         }
 
 
+        private void _xml_RegenerateTab(object sender, TabRestorationEventArgs e)
+        {
+            RestoreTab(e);
+        }
 
+        /// <summary>
+        /// Restore a saved tab from a previous session's stored XML data. This is usually triggered by 
+        /// an event from the XMLDocumentHistory class during program load. --Will Kraft (12/29/2019).
+        /// </summary>       
+        /// <param name="e">Tab data (from XML) to restore.</param>
+        void RestoreTab(TabRestorationEventArgs e)
+        {
+            Brush OutputBG = SystemColors.HighlightBrush;
+            Brush OutputSelection = SystemColors.WindowBrush;
+            Brush TabTextColor = SystemColors.ControlTextBrush;
+
+            switch (e.Task)
+            {
+                default:
+                case TaskType.Default: // This isn't supposed to happen but if it ever does, default system colors are good enough.
+                    break;
+
+                case TaskType.Prepare:
+                    TabTextColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1b80fa"));
+                    OutputBG = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#d9edff"));
+                    OutputSelection = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#486394"));
+                    break;
+
+                case TaskType.Strip:
+                    TabTextColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fe5000")); // old color: #fa781b
+                    OutputBG = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fff3cf"));
+                    OutputSelection = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9c4c24"));
+                    break;
+            }
+
+
+            var n = new EditorDuo
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Name = $"Editor{TabNumber}",
+                ID = e.TabID,
+                Processed = true,
+                Task = e.Task,
+                LowerText = e.LowerText,
+                UpperText = e.UpperText,
+                Args = e.PrepareArgs,
+                LowerColor = OutputBG,
+                LowerSelect = OutputSelection,
+                TabName = e.TabName
+            };
+
+            var t = new TabItem
+            {
+                Header = new HeaderedContentControl
+                {
+                    Header = e.TabName,
+                    Foreground = TabTextColor
+                },
+
+                Content = n
+            };
+
+            Tabs.Items.Add(t);
+
+            Tabs.SelectedIndex = Tabs.Items.Count - 1;
+            TabNumber++;
+        }
 
         void AddTab()
         {
@@ -99,10 +181,10 @@ namespace SqlPrep
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                Name = $"Editor",
+                Name = $"Editor{TabNumber}",
                 ID = Guid.NewGuid(),
                 Processed = false,
-                Task=TaskType.Default
+                Task = TaskType.Default
             };
 
             var t = new TabItem
@@ -205,14 +287,25 @@ namespace SqlPrep
             CurrentEditor.Processed = true;
             CurrentEditor.Task = e.Task;
             CurrentEditor.TabName = e.TabName;
+
+            // Non-prepare tasks don't produce args but we still need to store something for that
+            // in the XML so we can regen the tab on the next run. --Will Kraft (12/29/2019).
+            if (e.Task != TaskType.Prepare)
+                CurrentEditor.Args = new Delegates.PrepareEventArgs
+                {
+                    Cancelled = false,
+                    UseAppendLine = false,
+                    LeftPadding = 0,
+                    Object = OutputType.String,
+                    UseVar = true,
+                    VariableName = string.Empty
+                };
         }
 
         void StripClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                Console.WriteLine($"ID: {CurrentEditor.ID}");
-
                 var _s = new Strip(CurrentEditor.UpperText);
                 _s.TaskDone += OnTaskDone;
                 var _output = _s.Run(out string _convertErr);
@@ -315,7 +408,7 @@ namespace SqlPrep
                     foreach (TabItem i in Tabs.Items)
                     {
                         if (((EditorDuo)i.Content).Processed)
-                            value++;
+                            ++value;
                     }
 
                     return value;
@@ -330,8 +423,8 @@ namespace SqlPrep
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (ProcessedTabs > 0)
-                e.Cancel = MessageBox.Show("Do you really want to exit? All processed queries will be discarded when the program closes.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning,MessageBoxResult.No) == MessageBoxResult.No;
+            //if (ProcessedTabs > 0)
+            //    e.Cancel = MessageBox.Show("Do you really want to exit? All processed queries will be discarded when the program closes.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No;
 
 
         }
@@ -339,7 +432,18 @@ namespace SqlPrep
         private void Window_Closed(object sender, EventArgs e)
         {
             var _h = new XmlDocumentHistory();
-            _h.SaveTabstoXml(Tabs.Items);
+
+            if (ProcessedTabs > 0 && !DeleteHistory)
+            {
+                _h.SaveTabstoXml(Tabs.Items);
+            }
+            else
+            {
+                _h.DeleteHistory();
+            }
+
+
+
         }
     }
 }
