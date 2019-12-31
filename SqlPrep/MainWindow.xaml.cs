@@ -97,7 +97,7 @@ namespace SqlPrep
             {
                 _xml.RecoverTabs();
             }
-            else
+            else // Start empty session...
             {
                 AddTab();
                 CurrentEditor.InputFocus();
@@ -221,12 +221,19 @@ namespace SqlPrep
                 if (string.IsNullOrEmpty(CurrentEditor.UpperText))
                     throw new Exception("There is no Sql to convert.");
 
-                var _recycleArgs = false;
+                if (CurrentEditor.Task == TaskType.Strip)
+                    throw new Exception("You can't prepare a query that has been stripped unless you copy-and-paste the output into a new tab.");
+
+                var _recycleArgsPrompt = MessageBoxResult.None;
 
                 if (CurrentEditor.Args != null)
-                    _recycleArgs = MessageBox.Show("Do you want to re-apply the most recent settings to this query?", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+                    _recycleArgsPrompt = MessageBox.Show("Do you want to re-apply the most recent settings to this query?", "SqlPrep", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
 
-                if (_recycleArgs && CurrentEditor.Args != null)
+                // Give the user a chance to bail without affecting the processed query. --Will Kraft (12/31/2019).
+                if (_recycleArgsPrompt == MessageBoxResult.Cancel & CurrentEditor.Args != null)
+                    return;
+
+                if (_recycleArgsPrompt == MessageBoxResult.Yes && CurrentEditor.Args != null)
                 {
                     // Sender is not really important here, all we want are the stored args. --Will Kraft (11/30/2019).
                     P_Prepared(this, CurrentEditor.Args);
@@ -306,6 +313,9 @@ namespace SqlPrep
         {
             try
             {
+                if (CurrentEditor.Task == TaskType.Prepare)
+                    throw new Exception("You can't strip a query that has already been prepared unless you copy-and-paste the output into a new tab.");
+
                 var _s = new Strip(CurrentEditor.UpperText);
                 _s.TaskDone += OnTaskDone;
                 var _output = _s.Run(out string _convertErr);
@@ -444,6 +454,26 @@ namespace SqlPrep
 
 
 
+        }
+
+        private void MnuDeleteHistory_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (ProcessedTabs == 0 || !XmlDocumentHistory.HistoryExists)
+                    throw new Exception("There is no processed query history to delete.");
+
+
+                if (MessageBox.Show("Do you really want to discard all processed queries? Clicking \"Yes\" will immediately end the current session so the history can be deleted.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                {
+                    DeleteHistory = true;
+                    Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -43,9 +43,9 @@
             </MenuItem>
             <MenuItem Header="_Tab">
                 <MenuItem x:Name="MnuNewTab" Header="_New" Click="NewTabClick" InputGestureText="Ctrl+N" ></MenuItem>
-                <MenuItem x:Name="MnuCloseCurrent" Header="_Close Current" Click="CloseCurrentTabClick" InputGestureText="Ctrl+D" >
-
-                </MenuItem>
+                <MenuItem x:Name="MnuCloseCurrent" Header="_Close Current" Click="CloseCurrentTabClick" InputGestureText="Ctrl+D" ></MenuItem>
+                <Separator></Separator>
+                <MenuItem x:Name="MnuDeleteHistory" Header="_Discard Saved Queries" Click="MnuDeleteHistory_Click"  />
             </MenuItem>
             <MenuItem Header="T_ask">
                 <MenuItem x:Name="MnuPrepare" Header="_Prepare" Click="PrepareClick" InputGestureText="F2"></MenuItem>
