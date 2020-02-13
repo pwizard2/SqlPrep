@@ -16,6 +16,7 @@
     along with SqlPrep.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using Microsoft.Win32;
 using SqlPrep.Delegates;
 using SqlPrep.Worker;
 using System;
@@ -56,6 +57,10 @@ namespace SqlPrep
 
         int TabNumber { get; set; }
 
+        /// <summary>
+        /// Gets or sets the tab item the mouse is currently hovered over. --Will Kraft (1/4/2020).
+        /// </summary>
+        TabItem HoverTab { get; set; }
 
 
         public MainWindow()
@@ -157,14 +162,17 @@ namespace SqlPrep
                 TabName = e.TabName
             };
 
+            var _h = new HeaderedContentControl
+            {
+                Header = e.TabName,
+                Foreground = TabTextColor
+            };
+
+            _h.MouseDown += OnTabHeaderClick;
+
             var t = new TabItem
             {
-                Header = new HeaderedContentControl
-                {
-                    Header = e.TabName,
-                    Foreground = TabTextColor
-                },
-
+                Header = _h,
                 Content = n
             };
 
@@ -187,13 +195,18 @@ namespace SqlPrep
                 Task = TaskType.Default
             };
 
+            var _h = new HeaderedContentControl
+            {
+                Header = $"Query {TabNumber + 1}",
+            };
+
+            _h.MouseDown += OnTabHeaderClick;
+            _h.MouseEnter += _h_MouseEnter;
+
+
             var t = new TabItem
             {
-                Header = new HeaderedContentControl
-                {
-                    Header = $"Query {TabNumber + 1}"
-                },
-
+                Header = _h,
                 Content = n
             };
 
@@ -202,6 +215,17 @@ namespace SqlPrep
 
             Tabs.SelectedIndex = Tabs.Items.Count - 1;
             TabNumber++;
+        }
+
+        private void _h_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void OnTabHeaderClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Pressed)
+                CloseCurrentTab();
         }
 
         void Exit_Click(object sender, RoutedEventArgs e)
@@ -371,6 +395,11 @@ namespace SqlPrep
 
         private void CloseCurrentTabClick(object sender, RoutedEventArgs e)
         {
+            CloseCurrentTab();
+        }
+
+        void CloseCurrentTab()
+        {
             try
             {
                 Tabs.Items.Remove(CurrentTab);
@@ -389,7 +418,6 @@ namespace SqlPrep
             {
 
             }
-
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -464,10 +492,61 @@ namespace SqlPrep
                     throw new Exception("There is no processed query history to delete.");
 
 
-                if (MessageBox.Show("Do you really want to discard all processed queries? Clicking \"Yes\" will immediately end the current session so the history can be deleted.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Do you really want to discard all processed queries? Clicking \"Yes\" will immediately end the current session and restart the app so the history can be deleted.", "SqlPrep", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
                 {
                     DeleteHistory = true;
-                    Close();
+
+                    System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                    Application.Current.Shutdown();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MnuOpen_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var _o = new OpenFileDialog()
+                {
+                    Filter = "XML Documents|*.xml",
+                    DefaultExt = ".xml",
+                };
+                var _result = _o.ShowDialog();
+
+                if (_result == true)
+                {
+                    var _h = new XmlDocumentHistory();
+                    _h.RegenerateTab += _xml_RegenerateTab;
+                    _h.RecoverTabs(_o.FileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MnuSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var _s = new SaveFileDialog
+                {
+                    Filter = "XML Documents|*.xml",
+                    DefaultExt = ".xml",
+                    FileName = $"Batch_{DateTime.Today.ToString("yyMMdd")}.xml"
+                };
+
+                var _result = _s.ShowDialog();
+
+                if (_result == true)
+                {
+                    var _h = new XmlDocumentHistory();
+                    _h.SaveTabstoXml(Tabs.Items, _s.FileName);
                 }
             }
             catch (Exception ex)

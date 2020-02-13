@@ -16,6 +16,9 @@
         </Grid.RowDefinitions>
         <Menu  Margin="0" VerticalAlignment="Top" Height="20" >
             <MenuItem Header="_File">
+                <MenuItem x:Name="MnuOpen" Header="_Open" Click="MnuOpen_Click"/>
+                <MenuItem x:Name="MnuSave" Header="_Save" Click="MnuSave_Click"/>
+                <Separator />
                 <MenuItem x:Name="MnuAbout" Header="_About" Click="About_Click"/>
 
                 <MenuItem x:Name="MnuExit" Header="_Exit" Click="Exit_Click" />

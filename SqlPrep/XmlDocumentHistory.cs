@@ -22,6 +22,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
+using System.Xml.XPath;
 
 namespace SqlPrep
 {
@@ -95,59 +96,90 @@ namespace SqlPrep
             }
         }
 
+
+
         /// <summary>
-        /// Turn the contents of the XML file into tab restoration events for the main form to handle. --Will Kraft (12/29/2019).
+        /// Turn the contents of the XML file into tab restoration events for the main form to handle. --Will Kraft (2/12/2020).
         /// </summary>
         public void RecoverTabs()
         {
-            XmlDocument settings = new XmlDocument();
-            settings.Load(Path.Combine(configPath, "TabHistory.xml"));
+            RecoverTabs(Path.Combine(configPath, "TabHistory.xml"));
+        }
 
-            XmlNode root = settings.SelectSingleNode("Tabs");
-
-            XmlNodeList _editors = root.SelectNodes("EditorDuo");
-
-            foreach (XmlNode e in _editors)
+        /// <summary>
+        /// Turn the contents of the XML file into tab restoration events for the main form to handle. --Will Kraft (12/29/2019).
+        /// </summary>
+        public void RecoverTabs(string path)
+        {
+            try
             {
-                try
-                {
-                    bool.TryParse(e.SelectSingleNode("Implicit").InnerText, out bool useImplicit);
-                    bool.TryParse(e.SelectSingleNode("AppendLine").InnerText, out bool useAppendL);
-                    int.TryParse(e.SelectSingleNode("Task").InnerText, out int _taskType);
-                    int.TryParse(e.SelectSingleNode("LeftPadding").InnerText, out int _lPad);
-                    int.TryParse(e.SelectSingleNode("Output").InnerText, out int _outputT);
-                    Guid.TryParse(e.Attributes.GetNamedItem("GUID").InnerText, out Guid _tabGuid);
+                XmlDocument settings = new XmlDocument();
+                settings.Load(path);
 
-                    RegenerateTab?.Invoke(this, new TabRestorationEventArgs
-                    {
-                        TabID = _tabGuid,
-                        UpperText = e.SelectSingleNode("Upper").InnerText,
-                        LowerText = e.SelectSingleNode("Lower").InnerText,
-                        TabName = e.SelectSingleNode("TabName").InnerText,
-                        Task = (TaskType)_taskType,
-                        PrepareArgs = new PrepareEventArgs
-                        {
-                            VariableName = e.SelectSingleNode("Variable").InnerText,
-                            UseVar = useImplicit,
-                            UseAppendLine = useAppendL,
-                            Cancelled = false,
-                            LeftPadding = _lPad,
-                            Object = (OutputType)_outputT,
-                        }
-                    });
-                }
-                catch (Exception ex)
+                XmlNode root = settings.SelectSingleNode("Tabs");
+
+                // rudimentary check for now, better one to come later. --Will Kraft (2/12/2020).
+                if (root.SelectNodes("EditorDuo") == null)
+                    throw new NullReferenceException();
+
+                XmlNodeList _editors = root.SelectNodes("EditorDuo");
+
+                foreach (XmlNode e in _editors)
                 {
-                    MessageBox.Show($"Unable to load query history: {ex.Message}", "SqlPrep", MessageBoxButton.OK, MessageBoxImage.Error);
+                    try
+                    {
+                        bool.TryParse(e.SelectSingleNode("Implicit").InnerText, out bool useImplicit);
+                        bool.TryParse(e.SelectSingleNode("AppendLine").InnerText, out bool useAppendL);
+                        int.TryParse(e.SelectSingleNode("Task").InnerText, out int _taskType);
+                        int.TryParse(e.SelectSingleNode("LeftPadding").InnerText, out int _lPad);
+                        int.TryParse(e.SelectSingleNode("Output").InnerText, out int _outputT);
+                        Guid.TryParse(e.Attributes.GetNamedItem("GUID").InnerText, out Guid _tabGuid);
+
+                        RegenerateTab?.Invoke(this, new TabRestorationEventArgs
+                        {
+                            TabID = _tabGuid,
+                            UpperText = e.SelectSingleNode("Upper").InnerText,
+                            LowerText = e.SelectSingleNode("Lower").InnerText,
+                            TabName = e.SelectSingleNode("TabName").InnerText,
+                            Task = (TaskType)_taskType,
+                            PrepareArgs = new PrepareEventArgs
+                            {
+                                VariableName = e.SelectSingleNode("Variable").InnerText,
+                                UseVar = useImplicit,
+                                UseAppendLine = useAppendL,
+                                Cancelled = false,
+                                LeftPadding = _lPad,
+                                Object = (OutputType)_outputT,
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Unable to load query history: {ex.Message}", "SqlPrep", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
+            catch (NullReferenceException ex)
+            {
+                MessageBox.Show("This XML file is not compatible with SqlPrep.", "SqlPrep", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Save the current tabs and their contents/settings to an Xml document. --Will Kraft (2/12/2020).
+        /// </summary>
+        /// <param name="tabs">Current tab collection.</param>
+        public void SaveTabstoXml(ItemCollection tabs)
+        {
+            SaveTabstoXml(tabs, Path.Combine(configPath, "TabHistory.xml"));
         }
 
         /// <summary>
         /// Save the current tabs and their contents/settings to an Xml document. --Will Kraft (12/24/2019).
         /// </summary>
         /// <param name="tabs">Current tab collection.</param>
-        public void SaveTabstoXml(ItemCollection tabs)
+        /// <param name="path"> Output path</param>
+        public void SaveTabstoXml(ItemCollection tabs, string path)
         {
             try
             {
@@ -207,7 +239,7 @@ namespace SqlPrep
                     _tabNode.AppendChild(_tabName);
 
                     _root.AppendChild(_tabNode);
-                    settings.Save(Path.Combine(configPath, "TabHistory.xml"));
+                    settings.Save(path);
                 }
             }
             catch (Exception ex)
