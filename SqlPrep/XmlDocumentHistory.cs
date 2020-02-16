@@ -18,6 +18,7 @@
 
 using SqlPrep.Delegates;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -96,20 +97,20 @@ namespace SqlPrep
             }
         }
 
-
-
         /// <summary>
         /// Turn the contents of the XML file into tab restoration events for the main form to handle. --Will Kraft (2/12/2020).
         /// </summary>
         public void RecoverTabs()
         {
-            RecoverTabs(Path.Combine(configPath, "TabHistory.xml"));
+            RecoverTabs(Path.Combine(configPath, "TabHistory.xml"), new List<Guid>());
         }
 
         /// <summary>
         /// Turn the contents of the XML file into tab restoration events for the main form to handle. --Will Kraft (12/29/2019).
         /// </summary>
-        public void RecoverTabs(string path)
+        /// <param name="path">Path to file</param>
+        /// <param name="Fingerprints">Fingerprint list for the tabs we already have open.</param>
+        public void RecoverTabs(string path, List<Guid> Fingerprints)
         {
             try
             {
@@ -135,9 +136,13 @@ namespace SqlPrep
                         int.TryParse(e.SelectSingleNode("Output").InnerText, out int _outputT);
                         Guid.TryParse(e.Attributes.GetNamedItem("GUID").InnerText, out Guid _tabGuid);
 
+                        // check to see if the fingerprint list already has this GUID in it. This can happen 
+                        // if the same history file is loaded multiple times per session. --Will Kraft (2/16/2020).
+                        var _verifiedID = Fingerprints.Contains(_tabGuid) ? Guid.NewGuid() : _tabGuid;
+
                         RegenerateTab?.Invoke(this, new TabRestorationEventArgs
                         {
-                            TabID = _tabGuid,
+                            TabID = _verifiedID,
                             UpperText = e.SelectSingleNode("Upper").InnerText,
                             LowerText = e.SelectSingleNode("Lower").InnerText,
                             TabName = e.SelectSingleNode("TabName").InnerText,
@@ -159,7 +164,7 @@ namespace SqlPrep
                     }
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 MessageBox.Show("This XML file is not compatible with SqlPrep.", "SqlPrep", MessageBoxButton.OK, MessageBoxImage.Error);
             }

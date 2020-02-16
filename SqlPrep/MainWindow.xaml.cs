@@ -151,16 +151,13 @@ namespace SqlPrep
                     break;
             }
 
-            // Check to prevent duplicate GUIDs. Without a check, this can happen if the same history file is loaded into the same 
-            // session more than once. --Will Kraft (2/16/2020).
-            var _id = Fingerprints.Contains(e.TabID) ? Guid.NewGuid() : e.TabID;
 
             var n = new EditorDuo
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Name = $"Editor{TabNumber}",
-                ID = _id,
+                ID = e.TabID,
                 Processed = true,
                 Task = e.Task,
                 LowerText = e.LowerText,
@@ -183,7 +180,7 @@ namespace SqlPrep
             {
                 Header = _h,
                 Content = n,
-                Tag = _id
+                Tag = e.TabID
             };
 
             Tabs.Items.Add(t);
@@ -196,8 +193,9 @@ namespace SqlPrep
             {
                 Header = e.TabName.Replace("_", "__"),
                 Tag = e.TabID,
-                Foreground = TabTextColor
-
+                Foreground = TabTextColor,
+                IsCheckable = true,
+                IsChecked = true // This corrects itself automatically as subsequent tabs are loaded, but it ensures the last                                   document is checked properly in the query list. --Will Kraft (2/16/2020).
             };
 
             _menuItem.Click += _menuItem_Click;
@@ -205,7 +203,7 @@ namespace SqlPrep
             MnuQueryList.Items.Add(_menuItem);
 
             TabNumber++;
-            Fingerprints.Add(_id);
+            Fingerprints.Add(e.TabID);
         }
 
         private void _menuItem_Click(object sender, RoutedEventArgs e)
@@ -596,7 +594,7 @@ namespace SqlPrep
                 {
                     var _h = new XmlDocumentHistory();
                     _h.RegenerateTab += _xml_RegenerateTab;
-                    _h.RecoverTabs(_o.FileName);
+                    _h.RecoverTabs(_o.FileName, Fingerprints);
                 }
             }
             catch (Exception ex)
@@ -646,7 +644,7 @@ namespace SqlPrep
                 }
 
 
-                
+
             }
             catch
             {
