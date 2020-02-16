@@ -20,6 +20,7 @@ using Microsoft.Win32;
 using SqlPrep.Delegates;
 using SqlPrep.Worker;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,13 +28,14 @@ using System.Windows.Media;
 
 namespace SqlPrep
 {
-
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        List<Guid> Fingerprints { get; set; }
+
         /// <summary>
         /// Gets or sets whether the history should be deleted when the program exits. --Will Kraft (12/29/2019).
         /// </summary>
@@ -67,6 +69,7 @@ namespace SqlPrep
         {
             InitializeComponent();
 
+
             var _newTabCmd = new RoutedCommand();
             _newTabCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(_newTabCmd, NewTabClick));
@@ -95,6 +98,8 @@ namespace SqlPrep
             _pasteTcmd.InputGestures.Add(new KeyGesture(Key.V, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(_pasteTcmd, PasteClick));
 
+            Fingerprints = new List<Guid>();
+
             var _xml = new XmlDocumentHistory();
             _xml.RegenerateTab += _xml_RegenerateTab;
 
@@ -117,7 +122,8 @@ namespace SqlPrep
 
         /// <summary>
         /// Restore a saved tab from a previous session's stored XML data. This is usually triggered by 
-        /// an event from the XMLDocumentHistory class during program load. --Will Kraft (12/29/2019).
+        /// an event from the XMLDocumentHistory class during program startup, or when a history file 
+        /// is loaded. --Will Kraft (12/29/2019).
         /// </summary>       
         /// <param name="e">Tab data (from XML) to restore.</param>
         void RestoreTab(TabRestorationEventArgs e)
@@ -145,13 +151,16 @@ namespace SqlPrep
                     break;
             }
 
+            // Check to prevent duplicate GUIDs. Without a check, this can happen if the same history file is loaded into the same 
+            // session more than once. --Will Kraft (2/16/2020).
+            var _id = Fingerprints.Contains(e.TabID) ? Guid.NewGuid() : e.TabID;
 
             var n = new EditorDuo
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Name = $"Editor{TabNumber}",
-                ID = e.TabID,
+                ID = _id,
                 Processed = true,
                 Task = e.Task,
                 LowerText = e.LowerText,
@@ -173,31 +182,66 @@ namespace SqlPrep
             var t = new TabItem
             {
                 Header = _h,
-                Content = n
+                Content = n,
+                Tag = _id
             };
 
             Tabs.Items.Add(t);
 
             Tabs.SelectedIndex = Tabs.Items.Count - 1;
+
+            // Create a menu item for this  tab. Menu items and tabs are bound together 
+            // using the editor's GUID as a reference. --Will Kraft (2/16/2020).
+            var _menuItem = new MenuItem
+            {
+                Header = e.TabName.Replace("_", "__"),
+                Tag = e.TabID,
+                Foreground = TabTextColor
+
+            };
+
+            _menuItem.Click += _menuItem_Click;
+
+            MnuQueryList.Items.Add(_menuItem);
+
             TabNumber++;
+            Fingerprints.Add(_id);
+        }
+
+        private void _menuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var m = (MenuItem)sender;
+
+            m.IsCheckable = true;
+            m.IsChecked = true;
+
+            foreach (TabItem t in Tabs.Items)
+                if ((Guid)t.Tag == (Guid)m.Tag)
+                {
+                    Tabs.SelectedItem = t;
+                    t.IsSelected = true;
+                }
+
         }
 
         void AddTab()
         {
+            var _id = Guid.NewGuid();
+            var _tempName = $"Query {TabNumber + 1}";
 
             var n = new EditorDuo
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Name = $"Editor{TabNumber}",
-                ID = Guid.NewGuid(),
+                ID = _id,
                 Processed = false,
                 Task = TaskType.Default
             };
 
             var _h = new HeaderedContentControl
             {
-                Header = $"Query {TabNumber + 1}",
+                Header = _tempName,
             };
 
             _h.MouseDown += OnTabHeaderClick;
@@ -207,14 +251,27 @@ namespace SqlPrep
             var t = new TabItem
             {
                 Header = _h,
-                Content = n
+                Content = n,
+                Tag = _id
             };
 
             Tabs.Items.Add(t);
 
+            // Create a menu item for this new tab. Menu items and tabs are bound together 
+            // using the editor's GUID as a reference. --Will Kraft (2/16/2020).
+            var _menuItem = new MenuItem
+            {
+                Header = _tempName,
+                Tag = _id,
+            };
+
+            _menuItem.Click += _menuItem_Click;
+
+            MnuQueryList.Items.Add(_menuItem);
 
             Tabs.SelectedIndex = Tabs.Items.Count - 1;
             TabNumber++;
+            Fingerprints.Add(_id);
         }
 
         private void _h_MouseEnter(object sender, MouseEventArgs e)
@@ -319,6 +376,15 @@ namespace SqlPrep
             CurrentEditor.Task = e.Task;
             CurrentEditor.TabName = e.TabName;
 
+            foreach (MenuItem mi in MnuQueryList.Items)
+            {
+                if ((Guid)mi.Tag == (Guid)CurrentTab.Tag)
+                {
+                    mi.Header = e.TabName.Replace("_", "__");
+                    mi.Foreground = e.TabTextColor;
+                }
+            }
+
             // Non-prepare tasks don't produce args but we still need to store something for that
             // in the XML so we can regen the tab on the next run. --Will Kraft (12/29/2019).
             if (e.Task != TaskType.Prepare)
@@ -402,7 +468,16 @@ namespace SqlPrep
         {
             try
             {
+                var _currentID = (Guid)CurrentTab.Tag;
+
                 Tabs.Items.Remove(CurrentTab);
+
+                foreach (MenuItem mi in MnuQueryList.Items)
+                {
+                    if ((Guid)mi.Tag == _currentID)
+                        MnuQueryList.Items.Remove(mi);
+                    Fingerprints.Remove(_currentID);
+                }
 
                 if (Tabs.Items.Count == 0)
                 {
@@ -553,6 +628,31 @@ namespace SqlPrep
             {
                 MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Tabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (Tabs.Items.Count == 0)
+                {
+                    TabNumber = 0;
+                    AddTab();
+                }
+
+                foreach (MenuItem mi in MnuQueryList.Items)
+                {
+                    mi.IsChecked = (Guid)mi.Tag == (Guid)CurrentTab.Tag;
+                }
+
+
+                
+            }
+            catch
+            {
+
+            }
+
         }
     }
 }
