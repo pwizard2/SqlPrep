@@ -12,11 +12,16 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
-        <StatusBar x:Name="Status" Grid.Row="1">
+        <StatusBar x:Name="Status" Grid.Row="1" HorizontalContentAlignment="Stretch">
+            
             <TextBlock x:Name="txtRow">Row: 0</TextBlock>
             <TextBlock x:Name="txtCol">Col: 0</TextBlock>
+            <Separator Name="Sep1"></Separator>
+            <TextBlock x:Name="DateStamp"></TextBlock>
+            <Separator Name="Sep2"></Separator>
+            <TextBlock x:Name="OperationType"></TextBlock>
         </StatusBar>
-        <TextBox  Margin="0,0,0,0" Grid.Row="0" TextWrapping="NoWrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="18" HorizontalScrollBarVisibility="Auto" AcceptsTab="True" VerticalScrollBarVisibility="Auto" Name="txtEditor" SelectionBrush="#FF858585" SelectionChanged="TxtEditor_SelectionChanged" TextChanged="txtEditor_TextChanged" KeyDown="txtEditor_KeyDown" />
+        <TextBox  Margin="0,0,0,0" Grid.Row="0" TextWrapping="NoWrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="18" HorizontalScrollBarVisibility="Auto" AcceptsTab="True" VerticalScrollBarVisibility="Auto" Name="txtEditor" SelectionBrush="#FF858585" SelectionChanged="TxtEditor_SelectionChanged" TextChanged="TxtEditor_TextChanged" KeyDown="txtEditor_KeyDown" />
     </Grid>
 
 </UserControl>

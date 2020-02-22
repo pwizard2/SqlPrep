@@ -78,7 +78,7 @@ namespace SqlPrep
         public Brush EditorSelectColor
         {
             get
-            {               
+            {
                 return txtEditor.SelectionBrush;
             }
             set
@@ -86,6 +86,79 @@ namespace SqlPrep
                 txtEditor.SelectionBrush = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the text selection color for the operation type. --Will Kraft (2/22/2020).
+        /// </summary>
+        public Brush OpStatusProcessedColor
+        {
+            get
+            {
+                return OperationType.Foreground;
+            }
+            set
+            {
+                OperationType.Foreground = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this editor has been processed yet.
+        /// </summary>
+        public bool Processed { get; set; }
+
+        public void SetTaskType()
+        {
+ 
+            switch (Task)
+            {
+                default:
+                    OperationType.Text = "None";
+                    break;
+
+
+                case TaskType.Prepare:
+                    OperationType.Text = "Prepare";
+                    break;
+
+                case TaskType.Strip:
+                    OperationType.Text = "Strip";
+                    break;
+            }
+
+        }
+
+
+        /// <summary>
+        /// Set the date stamp for this editor's status bar. --Will Kraft (2/22/2020).
+        /// </summary>
+        public void SetDateStamp()
+        {
+            if (!Processed && Position == EditorSinglePosition.Lower)
+            {
+                DateStamp.Visibility = Visibility.Collapsed;
+                Sep2.Visibility = Visibility.Collapsed;
+                return;
+            }
+            else
+            {
+                DateStamp.Visibility = Visibility.Visible;
+                Sep2.Visibility = Visibility.Visible;
+
+                switch (Position)
+                {
+                    default:
+                    case EditorSinglePosition.Upper:
+                        DateStamp.Text = CreationDate == default ? "Created: (Unknown)" : $"Created: {((DateTime)CreationDate).ToString()}";
+                        break;
+
+                    case EditorSinglePosition.Lower:
+                        DateStamp.Text = ProcessedDate == default ? "Processed: Never" : $"Processed: {((DateTime)ProcessedDate).ToString()}";
+                        break;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Gets or sets the time this editor was created. Only upper editors should use 
@@ -101,31 +174,25 @@ namespace SqlPrep
 
         private void TxtEditor_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            
-            SetRowsandCols();
+            TextEntered();
         }
 
-        private void txtEditor_TextChanged(object sender, TextChangedEventArgs e)
+        private void TxtEditor_TextChanged(object sender, TextChangedEventArgs e)
         {
-          
+            TextEntered();
         }
 
-        void SetRowsandCols()
+        void TextEntered()
         {
-            //var r = txtEditor.GetLineIndexFromCharacterIndex(txtEditor.CaretIndex);
-            //txtRow.Text = $"Row: {(r < 0 ? 0 : r + 1)}";
-
-            //txtCol.Text = $"Col: {(txtEditor.GetCharacterIndexFromLineIndex(r) < 0 ? 0 : txtEditor.GetCharacterIndexFromLineIndex(r) + 1)}";
 
             var r = txtEditor.GetLineIndexFromCharacterIndex(txtEditor.CaretIndex);
             txtRow.Text = $"Row: {(r < 0 ? 0 : r + 1)}";
-
-            txtCol.Text = $"Col: {(txtEditor.CaretIndex < 0 ? 0 : txtEditor.CaretIndex)}";
+            txtCol.Text = $"Col: {txtEditor.CaretIndex - txtEditor.GetCharacterIndexFromLineIndex(r) + 1}";
         }
 
         private void txtEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            SetRowsandCols();
+            TextEntered();
         }
     }
 }

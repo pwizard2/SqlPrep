@@ -376,6 +376,13 @@ namespace SqlPrep
             CurrentEditor.Task = e.Task;
             CurrentEditor.TabName = e.TabName;
 
+            CurrentEditor.Lower.Task = e.Task;
+            CurrentEditor.Lower.OpStatusProcessedColor = e.TabTextColor;
+            CurrentEditor.Lower.SetTaskType();
+            CurrentEditor.Lower.Processed = true;
+            CurrentEditor.Lower.ProcessedDate = DateTime.Now;
+            CurrentEditor.Lower.SetDateStamp();
+
             foreach (MenuItem mi in MnuQueryList.Items)
             {
                 if ((Guid)mi.Tag == (Guid)CurrentTab.Tag)

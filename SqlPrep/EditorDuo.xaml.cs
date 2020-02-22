@@ -90,12 +90,18 @@ namespace SqlPrep
         public EditorDuo()
         {
             InitializeComponent();
+            Upper.Processed = false;
+            Lower.Processed = false;
 
             Upper.CreationDate = DateTime.Now;
             Lower.CreationDate = default;
 
+
             Upper.ProcessedDate = default;
             Lower.ProcessedDate = default;
+
+            Upper.SetDateStamp();
+            Lower.SetDateStamp();
 
             TabOpened?.Invoke(this, EventArgs.Empty);
             InputFocus();
@@ -132,7 +138,7 @@ namespace SqlPrep
 
         private void txtLower_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-           // e.Handled = true;
+            // e.Handled = true;
         }
     }
 }
