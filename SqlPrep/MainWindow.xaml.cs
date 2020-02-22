@@ -237,6 +237,8 @@ namespace SqlPrep
                 Task = TaskType.Default
             };
 
+            
+
             var _h = new HeaderedContentControl
             {
                 Header = _tempName,

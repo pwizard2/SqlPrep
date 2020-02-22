@@ -60,4 +60,13 @@ namespace SqlPrep
         Strip = 2
 
     }
+
+    /// <summary>
+    /// Getsthe possible positions for an EditorSingle object. --Will Kraft (2/22/2020).
+    /// </summary>
+    public enum EditorSinglePosition
+    {
+        Upper = 0,
+        Lower = 1
+    }
 }

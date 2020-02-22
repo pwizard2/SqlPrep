@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="SqlPrep.EditorSingle"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SqlPrep"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <StatusBar x:Name="Status" Grid.Row="1">
+            <TextBlock x:Name="txtRow">Row: 0</TextBlock>
+            <TextBlock x:Name="txtCol">Col: 0</TextBlock>
+        </StatusBar>
+        <TextBox  Margin="0,0,0,0" Grid.Row="0" TextWrapping="NoWrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="18" HorizontalScrollBarVisibility="Auto" AcceptsTab="True" VerticalScrollBarVisibility="Auto" Name="txtEditor" SelectionBrush="#FF858585" SelectionChanged="TxtEditor_SelectionChanged" TextChanged="txtEditor_TextChanged" KeyDown="txtEditor_KeyDown" />
+    </Grid>
+
+</UserControl>

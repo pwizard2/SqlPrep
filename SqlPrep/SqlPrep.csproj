@@ -79,6 +79,9 @@
     <Compile Include="Delegates\ConverterEventArgs.cs" />
     <Compile Include="Delegates\PrepareEventArgs.cs" />
     <Compile Include="Delegates\TabRestorationEventArgs.cs" />
+    <Compile Include="EditorSingle.xaml.cs">
+      <DependentUpon>EditorSingle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums.cs" />
     <Compile Include="Prepare.xaml.cs">
       <DependentUpon>Prepare.xaml</DependentUpon>
@@ -93,6 +96,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditorDuo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditorSingle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

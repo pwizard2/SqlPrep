@@ -33,11 +33,11 @@ namespace SqlPrep
         {
             get
             {
-                return txtUpper.Text;
+                return Upper.Text;
             }
             set
             {
-                txtUpper.Text = value;
+                Upper.Text = value;
             }
         }
 
@@ -45,11 +45,11 @@ namespace SqlPrep
         {
             get
             {
-                return txtLower.Background;
+                return Lower.EditorBackground;
             }
             set
             {
-                txtLower.Background = value;
+                Lower.EditorBackground = value;
             }
         }
 
@@ -57,11 +57,11 @@ namespace SqlPrep
         {
             get
             {
-                return txtLower.SelectionBrush;
+                return Lower.EditorSelectColor;
             }
             set
             {
-                txtLower.SelectionBrush = value;
+                Lower.EditorSelectColor = value;
             }
         }
 
@@ -72,11 +72,11 @@ namespace SqlPrep
         {
             get
             {
-                return txtLower.Text;
+                return Lower.Text;
             }
             set
             {
-                txtLower.Text = value;
+                Lower.Text = value;
             }
         }
 
@@ -91,6 +91,12 @@ namespace SqlPrep
         {
             InitializeComponent();
 
+            Upper.CreationDate = DateTime.Now;
+            Lower.CreationDate = default;
+
+            Upper.ProcessedDate = default;
+            Lower.ProcessedDate = default;
+
             TabOpened?.Invoke(this, EventArgs.Empty);
             InputFocus();
         }
@@ -100,7 +106,7 @@ namespace SqlPrep
         /// </summary>
         public void InputFocus()
         {
-            txtUpper.Focus();
+            Upper.InputFocus();
         }
 
         /// <summary>

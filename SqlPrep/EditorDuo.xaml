@@ -16,9 +16,9 @@
                 <RowDefinition Height="3"></RowDefinition>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <TextBox  Margin="0,0,0,0" Grid.Row="0" TextWrapping="NoWrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="18" HorizontalScrollBarVisibility="Auto" AcceptsTab="True" VerticalScrollBarVisibility="Auto" Name="txtUpper" SelectionBrush="#FF858585" PreviewKeyDown="txtUpper_PreviewKeyDown"/>
-            <GridSplitter HorizontalAlignment="Stretch" Height="3" Margin="0,0,0,0" Grid.Row="1" Background="#FFEEEAEA" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" />
-            <TextBox  Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap"  Name="txtLower" AcceptsReturn="True" FontFamily="Consolas" FontSize="18"  IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" AcceptsTab="True" PreviewKeyDown="txtLower_PreviewKeyDown" />
+            <GridSplitter HorizontalAlignment="Stretch" Height="3" Margin="0,0,0,0" Grid.Row="1" Background="#FFBBB4B4" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" />
+            <local:EditorSingle x:Name="Upper" BorderBrush="#FF7C7C7C"/>
+            <local:EditorSingle x:Name="Lower" Grid.Row="2" Position="Lower"/>
 
         </Grid>
 
