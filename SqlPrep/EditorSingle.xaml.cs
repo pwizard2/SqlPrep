@@ -109,7 +109,7 @@ namespace SqlPrep
 
         public void SetTaskType()
         {
- 
+
             switch (Task)
             {
                 default:
@@ -149,11 +149,11 @@ namespace SqlPrep
                 {
                     default:
                     case EditorSinglePosition.Upper:
-                        DateStamp.Text = CreationDate == default ? "Created: (Unknown)" : $"Created: {((DateTime)CreationDate).ToString()}";
+                        DateStamp.Text = CreationDate == default || CreationDate == DateTime.MinValue ? "Created: Unknown" : $"Created: {((DateTime)CreationDate).ToString()}";
                         break;
 
                     case EditorSinglePosition.Lower:
-                        DateStamp.Text = ProcessedDate == default ? "Processed: Never" : $"Processed: {((DateTime)ProcessedDate).ToString()}";
+                        DateStamp.Text = ProcessedDate == default || ProcessedDate == DateTime.MinValue ? "Last Processed: Unknown" : $"Last Processed: {((DateTime)ProcessedDate).ToString()}";
                         break;
                 }
             }

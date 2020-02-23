@@ -165,8 +165,18 @@ namespace SqlPrep
                 Args = e.PrepareArgs,
                 LowerColor = OutputBG,
                 LowerSelect = OutputSelection,
-                TabName = e.TabName
+                TabName = e.TabName,
+                
             };
+
+            n.Upper.CreationDate = e.CreationDate;
+            n.Lower.ProcessedDate = e.ProcessedDate;
+            n.Lower.Task = e.Task;
+            n.Lower.OpStatusProcessedColor = TabTextColor;
+            n.Lower.Processed = true;
+            n.Lower.SetDateStamp();
+            n.Upper.SetDateStamp();
+            n.Lower.SetTaskType();
 
             var _h = new HeaderedContentControl
             {
@@ -237,7 +247,11 @@ namespace SqlPrep
                 Task = TaskType.Default
             };
 
-            
+            n.Upper.CreationDate = DateTime.Now;
+            n.Lower.Task = TaskType.Default;
+            n.Lower.Processed = false;
+            n.Upper.SetDateStamp();
+            n.Lower.SetTaskType();
 
             var _h = new HeaderedContentControl
             {

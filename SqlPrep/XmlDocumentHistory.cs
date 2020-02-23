@@ -136,6 +136,20 @@ namespace SqlPrep
                         int.TryParse(e.SelectSingleNode("Output").InnerText, out int _outputT);
                         Guid.TryParse(e.Attributes.GetNamedItem("GUID").InnerText, out Guid _tabGuid);
 
+
+                        var _createdN = e.SelectSingleNode("CreatedOn");
+                        var _processedN = e.SelectSingleNode("ProcessedOn");
+
+                        // Use default values if the XML lacks the CreatedOn or ProcessedOn data. --Will Kraft (2/23/2020).
+                        DateTime? _created = _createdN == null ? default
+                            : (DateTime.TryParse(_createdN.InnerText, out DateTime _createdT) ?
+                            _createdT : default);
+
+                        DateTime? _processed =  _processedN== null ? default
+                            : (DateTime.TryParse(_processedN.InnerText, out DateTime _processedT) ?
+                            _processedT : default);
+
+
                         // check to see if the fingerprint list already has this GUID in it. This can happen 
                         // if the same history file is loaded multiple times per session. --Will Kraft (2/16/2020).
                         var _verifiedID = Fingerprints.Contains(_tabGuid) ? Guid.NewGuid() : _tabGuid;
@@ -155,7 +169,9 @@ namespace SqlPrep
                                 Cancelled = false,
                                 LeftPadding = _lPad,
                                 Object = (OutputType)_outputT,
-                            }
+                            },
+                            CreationDate = _created,
+                            ProcessedDate = _processed
                         });
                     }
                     catch (Exception ex)
@@ -240,6 +256,14 @@ namespace SqlPrep
                     var _out = settings.CreateElement("Output");
                     _out.InnerText = ((int)_editor.Args.Object).ToString();
                     _tabNode.AppendChild(_out);
+
+                    var _created = settings.CreateElement("CreatedOn");
+                    _created.InnerText = _editor.Upper.CreationDate == default || _editor.Upper.CreationDate ==DateTime.MinValue ? string.Empty : ((DateTime)_editor.Upper.CreationDate).ToString();
+                    _tabNode.AppendChild(_created);
+
+                    var _processed = settings.CreateElement("ProcessedOn");
+                    _processed.InnerText = _editor.Lower.ProcessedDate == default || _editor.Lower.ProcessedDate == DateTime.MinValue ? string.Empty : ((DateTime)_editor.Lower.ProcessedDate).ToString();
+                    _tabNode.AppendChild(_processed);
 
                     _tabNode.AppendChild(_tabName);
 

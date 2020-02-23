@@ -93,7 +93,7 @@ namespace SqlPrep
             Upper.Processed = false;
             Lower.Processed = false;
 
-            Upper.CreationDate = DateTime.Now;
+            Upper.CreationDate = default;
             Lower.CreationDate = default;
 
 

@@ -56,6 +56,18 @@ namespace SqlPrep.Delegates
         /// </summary>
         public PrepareEventArgs PrepareArgs { get; set; }
 
+        /// <summary>
+        /// Gets or sets the time this editor was created. Only upper editors should use 
+        /// this, set default otherwise. --Will Kraft (2/23/2020).
+        /// </summary>
+        public DateTime? CreationDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time this editor was last processed. Only lower editors should 
+        /// use this, set default otherwise. --Will Kraft (2/23/2020).
+        /// </summary>
+        public DateTime? ProcessedDate { get; set; }
+
     }
 
     /// <summary>
