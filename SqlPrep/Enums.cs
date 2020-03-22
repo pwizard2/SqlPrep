@@ -1,6 +1,6 @@
 ﻿/*
    This file is part of SqlPrep.
-   Copyright © 2019, Will Kraft <pwizard@gmail.com>
+   Copyright © 2020, Will Kraft <pwizard@gmail.com>
 
     SqlPrep is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

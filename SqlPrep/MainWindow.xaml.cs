@@ -33,6 +33,10 @@ namespace SqlPrep
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// If true, this is used top suppress the new tab action.--Will Kraft (3/1/2020).
+        /// </summary>
+        bool LoadingFile { get; set; }
 
         List<Guid> Fingerprints { get; set; }
 
@@ -68,7 +72,7 @@ namespace SqlPrep
         public MainWindow()
         {
             InitializeComponent();
-
+            LoadingFile = false;
 
             var _newTabCmd = new RoutedCommand();
             _newTabCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
@@ -112,6 +116,13 @@ namespace SqlPrep
                 AddTab();
                 CurrentEditor.InputFocus();
             }
+
+            MnuDeleteHistory.IsEnabled = ProcessedTabs > 0 || XmlDocumentHistory.HistoryExists;
+            
+            // Scale to primary screen size to avoid oversize windows on that small-screen laptop I'm
+            // using for work these days. --Will Kraft (3/22/2020).
+            Width = SystemParameters.PrimaryScreenWidth / 1.8;
+            Height = SystemParameters.PrimaryScreenHeight / 1.4;
         }
 
 
@@ -166,7 +177,7 @@ namespace SqlPrep
                 LowerColor = OutputBG,
                 LowerSelect = OutputSelection,
                 TabName = e.TabName,
-                
+
             };
 
             n.Upper.CreationDate = e.CreationDate;
@@ -615,6 +626,23 @@ namespace SqlPrep
 
                 if (_result == true)
                 {
+
+                    var _dlg = new ImportDialog
+                    {
+                        Owner = this
+                    };
+
+                    _dlg.ShowDialog();
+
+                    if (!_dlg.Append)
+                    {
+                        LoadingFile = true;
+                        Tabs.Items.Clear();
+                        MnuQueryList.Items.Clear();
+                        Fingerprints.Clear();
+                    }
+
+
                     var _h = new XmlDocumentHistory();
                     _h.RegenerateTab += _xml_RegenerateTab;
                     _h.RecoverTabs(_o.FileName, Fingerprints);
@@ -623,6 +651,10 @@ namespace SqlPrep
             catch (Exception ex)
             {
                 MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoadingFile = false;
             }
         }
 
@@ -658,22 +690,72 @@ namespace SqlPrep
                 if (Tabs.Items.Count == 0)
                 {
                     TabNumber = 0;
-                    AddTab();
+
+                    if (!LoadingFile)
+                        AddTab();
                 }
 
                 foreach (MenuItem mi in MnuQueryList.Items)
                 {
                     mi.IsChecked = (Guid)mi.Tag == (Guid)CurrentTab.Tag;
                 }
-
-
-
             }
             catch
             {
 
             }
 
+        }
+
+        private void MnuCloseAll_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (ProcessedTabs > 0)
+                {
+                    var _confirm = MessageBox.Show("Do you want to save a copy of these processed queries?", "SqlPrep", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+
+                    if (_confirm == MessageBoxResult.Yes)
+                    {
+                        var _s = new SaveFileDialog
+                        {
+                            Filter = "XML Documents|*.xml",
+                            DefaultExt = ".xml",
+                            FileName = $"Batch_{DateTime.Today.ToString("yyMMdd")}.xml"
+                        };
+
+                        var _result = _s.ShowDialog();
+
+                        if (_result == true)
+                        {
+                            var _h = new XmlDocumentHistory();
+                            _h.SaveTabstoXml(Tabs.Items, _s.FileName);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else if (_confirm == MessageBoxResult.Cancel)
+                    {
+                        return;
+                    }
+                }
+
+                // Bugfix: LoadingFile prevents a new EditorDuo from showing up prematurely. --Will Kraft (3/22/2020).
+                LoadingFile = true;
+                Tabs.Items.Clear();
+                MnuQueryList.Items.Clear();
+                Fingerprints.Clear();
+                LoadingFile = false;
+
+                AddTab();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(DevMode ? ex.ToString() : ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

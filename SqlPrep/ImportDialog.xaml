@@ -1,0 +1,29 @@
+﻿<Window x:Name="dlgImport" x:Class="SqlPrep.ImportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SqlPrep"
+        mc:Ignorable="d"
+        Title="Import Mode" Height="123.75" Width="375.312" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="217*"/>
+            <ColumnDefinition Width="221*"/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="34"/>
+
+        </Grid.RowDefinitions>
+        <Grid Grid.ColumnSpan="2">
+            <TextBlock x:Name="lblText" TextWrapping="Wrap" Text="Do you want to append this additional tab set to the existing tab collection or replace everything?" Margin="5"/>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5" Grid.ColumnSpan="2">
+            <Button x:Name="btnAppend" Content="Append to Current" Width="127" Margin="0,0,5,0" Click="BtnAppend_Click" IsDefault="True"/>
+            <Button x:Name="btnReplace" Content="Replace All" Width="83" Margin="0,0,5,0" Click="BtnReplace_Click"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
